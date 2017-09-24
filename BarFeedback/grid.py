@@ -8,9 +8,15 @@ import sched, time
 
 
 class Grid:
-    stimuli_positions = {"TopLeft": (-200,150), "TopMiddle": (0, 150), "TopRight": (200, 150), \
+    positions_locations = {"TopLeft": (-200,150), "TopMiddle": (0, 150), "TopRight": (200, 150), \
                         "Left": (-200, 0), "Right": (200, 0), \
                         "BottomLeft": (-200, -150), "BottomMiddle": (0, -150), "BottomRight": (200, -150)}
+
+    positions_indices = ["TopLeft", "TopMiddle", "TopRight", "Left", "Right", "BottomLeft", "BottomMiddle", "BottomRight"]
+
+
+    positions_indices2 = {"1": "TopLeft", "2": "TopMiddle", "3": "TopRight", "4": "Left", "5": "Right", \
+                         "6": "BottomLeft", "7": "BottomMiddle", "8": "BottomRight"}
 
     def paint_grid(self, canvas):
         line_horsizontal1 = stimuli.Line((-300, 80), (300, 80), 5)

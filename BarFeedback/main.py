@@ -10,8 +10,11 @@ This example is appropriate to illustrates the use of the Android runtime enviro
 from __future__ import division
 from nback import Nback
 
-n_back = Nback(True, 2)
+
+n_back = Nback(True, 2, 'a')
 n_back.run_experiment()
+
+
 
 from expyriment import control, stimuli, io, design, misc
 import sched, time

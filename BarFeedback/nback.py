@@ -5,20 +5,38 @@
 from expyriment import control, stimuli, design, misc, io
 from feedbackBar import FeedbackBar
 from grid import Grid
+import pandas as pd
+
 
 class Nback:
     exp = None
     auditory_key = misc.constants.K_RIGHT
     visual_key = misc.constants.K_LEFT
 
-    def __init__(self, develop_model, n):
+    def __init__(self, develop_model, n, stimuli_group):
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
         control.set_develop_mode(develop_model)
         self.n = n
+        self.digit_list = []
+        self.positions_list = []
+        self.init_stimuli(n, stimuli_group)
 
-    digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
-    positions_list = ["TopLeft", "TopMiddle", "TopRight", "Left", "Right", "BottomLeft", "BottomMiddle", "BottomRight"]
+
+
+    #digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
+
+    def init_stimuli(self, n, stimuli_group):
+        # Assign spreadsheet filename to `file`
+        file = 'C:/Users/NOA/fMRI_E_Project/stimuli_new.xlsx'
+
+        # Load spreadsheet
+        xl = pd.ExcelFile(file)
+        df1 = xl.parse(str(n)+"back-" + stimuli_group)
+
+        for values in df1.values:
+            self.digit_list.insert(len(self.digit_list), values[0])
+            self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
 
     def run_experiment(self):
         self.exp = control.initialize()
@@ -38,7 +56,7 @@ class Nback:
             canvas = stimuli.BlankScreen()
             #target = stimuli.TextLine(text=str(digit), text_size=80)
 
-            target = stimuli.Rectangle((30,30), misc.constants.C_BLACK, 0, None, None, Grid.stimuli_positions[position])
+            target = stimuli.Rectangle((30,30), misc.constants.C_BLACK, 0, None, None, Grid.positions_locations[position])
             audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/" + str(digit) + ".wav")
             audio.preload()
             target.preload()
