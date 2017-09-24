@@ -14,6 +14,9 @@ class FeedbackBar:
     lineY_position = 250
     whole_length = red_part_length + yellow_part_length + green_part_length
     line_start_position = 0 - whole_length / 2
+    default_position_update = 30
+    trial_number = 0
+    mark_updates = [0,0,-1,-1, 0, -1, -1, 1, -1]
 
     def __init__(self, initial_mark_position):
         self.mark_position = initial_mark_position
@@ -44,7 +47,11 @@ class FeedbackBar:
     def set_mark_position(self, new_position):
         self.mark_position = new_position
 
-    def update_mark_position(self, update):
-        if self.mark_position + update > self.line_start_position and \
-                self.mark_position + update < self.line_start_position + self.whole_length:
-            self.mark_position += update
+    def update_mark_position(self, is_success):
+        if self.mark_position + self.default_position_update * is_success > self.line_start_position and \
+                self.mark_position + self.default_position_update * is_success < self.line_start_position + self.whole_length:
+            self.mark_position += self.default_position_update * is_success
+
+    def default_update_mark_position(self):
+        self.mark_position += self.default_position_update * self.mark_updates[self.trial_number]
+        self.trial_number += 1
