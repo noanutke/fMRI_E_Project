@@ -13,6 +13,7 @@ class Nback:
     auditory_key = misc.constants.K_RIGHT
     visual_key = misc.constants.K_LEFT
 
+
     def __init__(self, develop_model, n, stimuli_group):
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
@@ -45,8 +46,8 @@ class Nback:
 
         control.start(self.exp)
         n=2
-        ISI = 1000
-        stimuliDuration = 1000
+        ISI = 2500
+        stimuliDuration = 500
         counter = 0
 
         feedback_bar = FeedbackBar(10)
@@ -57,7 +58,7 @@ class Nback:
             #target = stimuli.TextLine(text=str(digit), text_size=80)
 
             target = stimuli.Rectangle((30,30), misc.constants.C_BLACK, 0, None, None, Grid.positions_locations[position])
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/" + str(digit) + ".wav")
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/" + str(digit) + "_low.wav")
             audio.preload()
             target.preload()
             target.plot(canvas)
@@ -68,6 +69,7 @@ class Nback:
             key, rt = self.exp.keyboard.wait([misc.constants.K_RIGHT], stimuliDuration)
             if key is None:
                 # we have waited stimuliDuration so we can remove
+                self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
                 feedback_bar.paint_whole_line(canvas)
                 grid.paint_grid(canvas)
@@ -80,6 +82,7 @@ class Nback:
             else:
                 self.exp.clock.wait(stimuliDuration - rt) # wait the rest of the stimuliDuration before removing
                 # we have now waited stimuliDuration so we can remove
+                self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
                 feedback_bar.paint_whole_line(canvas)
                 grid.paint_grid(canvas)
@@ -120,3 +123,13 @@ class Nback:
                 self.exp.data.add([digit, position, "Auditory", None, None, "MISS"])
             else:
                 self.exp.data.add([digit, position, None, None, None, "CR"])
+
+    def play_aversive_sound_if_needed(self, feedback_bar):
+        audio = None
+        if feedback_bar.is_in_danger():
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/Danger_1800.wav")
+        elif feedback_bar.is_in_red():
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/Alarm_900_loud2.wav")
+        if audio != None:
+            audio.preload()
+            audio.play()
