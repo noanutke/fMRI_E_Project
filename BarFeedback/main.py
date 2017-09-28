@@ -9,9 +9,17 @@ This example is appropriate to illustrates the use of the Android runtime enviro
 """
 from __future__ import division
 from nback import Nback
+from restBlock import RestBlock
+
+blocks = [(1,'a'), (3,'a'), (2, 'a'), (3, 'b'), (1, 'b'), (2, 'b')]
+experiment = Nback(True)
 
 
-n_back = Nback(True, 2, 'a')
+
+for block in blocks:
+    rest = RestBlock(str(block[0]), experiment.exp)
+    n_back = experiment.run(block[0], block[1])
+
 n_back.run_experiment()
 
 

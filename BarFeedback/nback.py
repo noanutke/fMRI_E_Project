@@ -12,18 +12,23 @@ class Nback:
     exp = None
     auditory_key = misc.constants.K_RIGHT
     visual_key = misc.constants.K_LEFT
+    n=0
 
 
-    def __init__(self, develop_model, n, stimuli_group):
+    def __init__(self, develop_mode):
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
-        control.set_develop_mode(develop_model)
-        self.n = n
+        control.set_develop_mode(develop_mode)
+        self.exp = control.initialize()
+        control.start(self.exp)
+
+
+    def run(self, n, stimuli_group):
         self.digit_list = []
         self.positions_list = []
+        self.n = n
         self.init_stimuli(n, stimuli_group)
-
-
+        self.run_experiment()
 
     #digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
 
@@ -35,16 +40,18 @@ class Nback:
         xl = pd.ExcelFile(file)
         df1 = xl.parse(str(n)+"back-" + stimuli_group)
 
+        number = 1
         for values in df1.values:
+            if number > 5:
+                break
             self.digit_list.insert(len(self.digit_list), values[0])
             self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
+            number += 1
 
     def run_experiment(self):
-        self.exp = control.initialize()
 
         self.exp.data_variable_names = ["digit", "position", "targetType", "response", "rt", "responseType"]
 
-        control.start(self.exp)
         n=2
         ISI = 2500
         stimuliDuration = 500
@@ -95,7 +102,7 @@ class Nback:
 
             counter += 1
 
-        control.end(goodbye_text="Thank you very much...", goodbye_delay=2000)
+        #control.end(goodbye_text="Thank you very much...", goodbye_delay=2000)
 
     def save_trial_data(self, key, rt, counter):
         digit = self.digit_list[counter]

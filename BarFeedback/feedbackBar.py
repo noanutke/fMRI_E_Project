@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division
-
+import pygame
 from expyriment import control, stimuli, io, design, misc
 import sched, time
 

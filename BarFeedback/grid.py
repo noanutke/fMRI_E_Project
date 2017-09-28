@@ -12,7 +12,7 @@ class Grid:
                         "Left": (-200, 0), "Right": (200, 0), \
                         "BottomLeft": (-200, -150), "BottomMiddle": (0, -150), "BottomRight": (200, -150)}
 
-    positions_indices = ["TopLeft", "TopMiddle", "TopRight", "Left", "Right", "BottomLeft", "BottomMiddle", "BottomRight"]
+    positions_indices = ["TopLeft", "TopMiddle", "TopLeft", "Left", "Right", "BottomLeft", "Right", "BottomRight"]
 
 
     positions_indices2 = {"1": "TopLeft", "2": "TopMiddle", "3": "TopRight", "4": "Left", "5": "Right", \
