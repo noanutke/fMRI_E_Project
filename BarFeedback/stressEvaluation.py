@@ -41,7 +41,7 @@ class StressEvaluation:
 
 
     def __init__(self, exp, text_array, screen_height, screen_width):
-        self.line_length = screen_width - 100
+        self.line_length = screen_width - 200
         self.exp = exp
         self.text_array = text_array
         self.line_positions_y = []
@@ -59,6 +59,7 @@ class StressEvaluation:
             position_y = lowest_height + spaces * index
             self.line_positions_y.insert(len(self.line_positions_y), position_y)
             self.marks_positions.insert(len(self.marks_positions), None)
+            self.write_text(line_text, ["not at all", "extremely"], position_y, self.canvas)
             self.paint_line(position_y, line_text[0], line_text[1], exp, self.canvas, None)
             index += 1
         self.canvas.present()
@@ -73,7 +74,9 @@ class StressEvaluation:
             button_done[1].plot(self.canvas)
         index = 0
         for line_text in self.text_array:
-            self.paint_line(self.line_positions_y[index], line_text[0], line_text[1], self.exp\
+            y_position = self.line_positions_y[index]
+            self.write_text(line_text, ["not at all", "extremely"], y_position, self.canvas)
+            self.paint_line(y_position, line_text[0], line_text[1], self.exp\
                             , self.canvas, self.marks_positions[index])
             index += 1
 
@@ -125,8 +128,27 @@ class StressEvaluation:
         return False
 
     def add_done_button(self):
-        buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 100))
+        buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 60))
         textA = stimuli.TextLine(text="done", position=buttonA.position,
                                  text_colour=misc.constants.C_WHITE)
 
         return [buttonA, textA]
+
+    def write_text(self, text_above, text_edges, y_position, canvas):
+        line_start = 0 - (self.line_length / 2)
+        line_end = 0 + (self.line_length / 2)
+        text_above = stimuli.TextLine(text_above, [0-10, y_position + 40])
+        text_start = stimuli.TextLine(text_edges[0], [line_start - 30, y_position + 20])
+        text_end = stimuli.TextLine(text_edges[1], [line_end, y_position + 20 ])
+        text_above.plot(canvas)
+        text_start.plot(canvas)
+        text_end.plot(canvas)
+
+    def get_positions_array_in_precentage(self):
+        precentage_array = []
+        line_start = 0 - (self.line_length / 2)
+        index = 0
+        for position in self.marks_positions:
+            precentage_array.insert(index, (position - line_start) / self.line_length * 100)
+            index += 1
+        return precentage_array

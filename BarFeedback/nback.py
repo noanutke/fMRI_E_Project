@@ -109,8 +109,9 @@ class Nback:
         digit = self.digit_list[counter]
         position = self.positions_list[counter]
 
-        if counter < 1:
+        if counter < self.n:
             self.exp.data.add([digit, position, None, None, None, None])
+            return
 
         if key == self.auditory_key:
             if digit == self.digit_list[counter - self.n]:
