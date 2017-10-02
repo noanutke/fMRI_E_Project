@@ -16,9 +16,11 @@ class FeedbackBar:
     line_start_position = 0 - whole_length / 2
     default_position_update = 50
     trial_number = 0
-    mark_updates = [0,-1,-1,-1, -1, -1, 0, 1, 1]
+    mark_updates = []
 
-    def __init__(self, initial_mark_position):
+    def __init__(self, initial_mark_position, bar_positions_list):
+        for position in bar_positions_list:
+            self.mark_updates.insert(len(self.mark_updates), (position-50)/100*self.whole_length)
         self.mark_position = initial_mark_position
 
     def get_line_middle_position(lineStart, lineLength):
@@ -67,7 +69,7 @@ class FeedbackBar:
             self.mark_position += self.default_position_update * is_success
 
     def default_update_mark_position(self):
-        self.mark_position += self.default_position_update * self.mark_updates[self.trial_number]
+        self.mark_position = self.mark_updates[self.trial_number]
         self.trial_number += 1
 
     def is_in_red(self):

@@ -26,6 +26,7 @@ class Nback:
     def run(self, n, stimuli_group):
         self.digit_list = []
         self.positions_list = []
+        self.bar_positions_list = []
         self.n = n
         self.init_stimuli(n, stimuli_group)
         self.run_experiment()
@@ -34,7 +35,7 @@ class Nback:
 
     def init_stimuli(self, n, stimuli_group):
         # Assign spreadsheet filename to `file`
-        file = 'C:/Users/NOA/fMRI_E_Project/stimuli_new.xlsx'
+        file = 'C:/Users/NOA/fMRI_E_Project/Nback_stimuli_bar.xlsx'
 
         # Load spreadsheet
         xl = pd.ExcelFile(file)
@@ -42,10 +43,9 @@ class Nback:
 
         number = 1
         for values in df1.values:
-            if number > 5:
-                break
             self.digit_list.insert(len(self.digit_list), values[0])
             self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
+            self.bar_positions_list.insert(len(self.digit_list), values[2])
             number += 1
 
     def run_experiment(self):
@@ -57,7 +57,7 @@ class Nback:
         stimuliDuration = 500
         counter = 0
 
-        feedback_bar = FeedbackBar(10)
+        feedback_bar = FeedbackBar(0, self.bar_positions_list)
         grid = Grid()
         for position in self.positions_list:
             digit = self.digit_list[counter]
