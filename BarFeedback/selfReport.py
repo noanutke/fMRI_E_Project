@@ -16,7 +16,7 @@ design.defaults.experiment_background_colour = misc.constants.C_GREY
 design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
 
 
-class StressEvaluation:
+class SelfReport:
     position_x = 0
     line_length = 700
 
@@ -40,7 +40,8 @@ class StressEvaluation:
 
 
 
-    def __init__(self, exp, text_array, screen_height, screen_width):
+    def __init__(self, exp, edges_text, text_array, screen_height, screen_width):
+        self.edges_text = edges_text
         self.line_length = screen_width - 200
         self.exp = exp
         self.text_array = text_array
@@ -59,7 +60,7 @@ class StressEvaluation:
             position_y = lowest_height + spaces * index
             self.line_positions_y.insert(len(self.line_positions_y), position_y)
             self.marks_positions.insert(len(self.marks_positions), None)
-            self.write_text(line_text, ["not at all", "extremely"], position_y, self.canvas)
+            self.write_text(line_text, self.edges_text[index-1], position_y, self.canvas)
             self.paint_line(position_y, line_text[0], line_text[1], exp, self.canvas, None)
             index += 1
         self.canvas.present()
@@ -75,7 +76,7 @@ class StressEvaluation:
         index = 0
         for line_text in self.text_array:
             y_position = self.line_positions_y[index]
-            self.write_text(line_text, ["not at all", "extremely"], y_position, self.canvas)
+            self.write_text(line_text, self.edges_text[index], y_position, self.canvas)
             self.paint_line(y_position, line_text[0], line_text[1], self.exp\
                             , self.canvas, self.marks_positions[index])
             index += 1
@@ -128,7 +129,7 @@ class StressEvaluation:
         return False
 
     def add_done_button(self):
-        buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 60))
+        buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 40))
         textA = stimuli.TextLine(text="done", position=buttonA.position,
                                  text_colour=misc.constants.C_WHITE)
 
