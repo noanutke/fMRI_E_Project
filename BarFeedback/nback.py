@@ -43,10 +43,11 @@ class Nback:
 
         number = 1
         for values in df1.values:
-            self.digit_list.insert(len(self.digit_list), values[0])
-            self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
-            self.bar_positions_list.insert(len(self.digit_list), values[2])
-            number += 1
+            if number < 2:
+                self.digit_list.insert(len(self.digit_list), values[0])
+                self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
+                self.bar_positions_list.insert(len(self.digit_list), values[2])
+                number += 1
 
     def run_experiment(self):
 

@@ -3,7 +3,7 @@ import pandas as pd
 
 
 class RestBlock:
-    show_instructions_for_seconds = 5
+    show_instructions_for_seconds = 1
     show_cross_for_seconds = 1
 
     def __init__(self, next_block, exp):
