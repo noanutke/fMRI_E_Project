@@ -14,8 +14,9 @@ from selfReport import SelfReport
 from writeToExcel import WriteToExcel
 
 
-blocks = [(1,'a'), (3,'a'), (2, 'a'), (3, 'b'), (1, 'b'), (2, 'b')]
-experiment = Nback(True)
+blocks = [(2,'c'), (3,'c'), (1, 'c'), (1,'a'), (3,'a'), (2, 'a'), (3, 'b'), (1, 'b'), (2, 'b')]
+#blocks = [(1,'a'), (3,'a'), (2, 'a'), (3, 'b'), (1, 'b'), (2, 'b')]
+experiment = Nback(True, True) #use develop mode, use aversive sound
 stress_evaluation_log = WriteToExcel("stress_evaluation", ["block_type", "Stressful", "Painful", "Unpleasant"])
 cognitive_load_log = WriteToExcel("cognitive_load_evaluation", ["block_type",\
                                                                 "Mental Demand", "Physical Demand",\
@@ -26,8 +27,8 @@ screen_width = 800
 
 index = 0
 for block in blocks:
-    if index > 2:
-        break
+    #if index > 2:
+        #break
     rest = RestBlock(str(block[0]), experiment.exp)
     n_back = experiment.run(block[0], block[1])
 

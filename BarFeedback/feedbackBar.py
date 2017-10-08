@@ -17,8 +17,11 @@ class FeedbackBar:
     default_position_update = 50
     trial_number = 0
     mark_updates = []
+    trials_in_danger = 0
 
     def __init__(self, initial_mark_position, bar_positions_list):
+        if len(bar_positions_list) == 0:
+            return
         for position in bar_positions_list:
             self.mark_updates.insert(len(self.mark_updates), (position-50)/100*self.whole_length)
         self.mark_position = initial_mark_position
@@ -40,6 +43,10 @@ class FeedbackBar:
         text.plot(canvas)
 
     def paint_whole_line(self, canvas):
+        cross = stimuli.FixCross((50,50), (0,0), 5)
+        cross.plot(canvas)
+        if len(self.mark_updates) == 0:
+            return
         self.paint_line_part(self.red_part_length, self.line_start_position + self.red_part_length / 2, misc.constants.C_RED, canvas)
         self.paint_line_part(self.yellow_part_length, self.line_start_position + self.red_part_length + self.yellow_part_length / 2 \
                   , misc.constants.C_YELLOW, canvas)
@@ -56,9 +63,7 @@ class FeedbackBar:
                                      position=(self.mark_position, self.lineY_position),
                                      colour=misc.constants.C_BLACK)
 
-        cross = stimuli.FixCross((50,50), (0,0), 5)
         markline.plot(canvas)
-        cross.plot(canvas)
 
     def set_mark_position(self, new_position):
         self.mark_position = new_position
@@ -69,6 +74,8 @@ class FeedbackBar:
             self.mark_position += self.default_position_update * is_success
 
     def default_update_mark_position(self):
+        if len(self.mark_updates) == 0:
+            return
         self.mark_position = self.mark_updates[self.trial_number]
         self.trial_number += 1
 
@@ -83,3 +90,34 @@ class FeedbackBar:
             return True
         else:
             return False
+
+    def is_aversive_stimuli_fade_in(self):
+        if self.trials_in_danger == 1:
+            return True
+        else:
+            return False
+
+    def is_aversive_stimuli_fade_out(self):
+        if self.trials_in_danger == 5:
+            return True
+        else:
+            return False
+
+    def is_aversive_stimuli_full(self):
+        if self.trials_in_danger > 1 and self.trials_in_danger < 5:
+            return True
+        else:
+            return False
+
+    def update_trials_in_danger(self):
+        if len(self.mark_updates) == 0:
+            return
+        if self.is_in_red():
+            self.trials_in_danger += 1
+        else:
+            self.trials_in_danger = 0
+
+    def is_feedback_bar_on(self):
+        if len(self.mark_updates) == 0:
+            return False
+        return True

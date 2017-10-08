@@ -15,7 +15,8 @@ class Nback:
     n=0
 
 
-    def __init__(self, develop_mode):
+    def __init__(self, develop_mode, use_aversive_sound):
+        self.use_aversive_sound = use_aversive_sound
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
         control.set_develop_mode(develop_mode)
@@ -35,7 +36,7 @@ class Nback:
 
     def init_stimuli(self, n, stimuli_group):
         # Assign spreadsheet filename to `file`
-        file = 'C:/Users/NOA/fMRI_E_Project/Nback_stimuli_bar.xlsx'
+        file = 'C:/Users/NOA/fMRI_E_Project/Nback_stimuli_bar_3.10.xlsx'
 
         # Load spreadsheet
         xl = pd.ExcelFile(file)
@@ -43,11 +44,12 @@ class Nback:
 
         number = 1
         for values in df1.values:
-            if number < 2:
-                self.digit_list.insert(len(self.digit_list), values[0])
-                self.positions_list.insert(len(self.positions_list), Grid.positions_indices[values[1]-1])
+            #if number < 2:
+            self.digit_list.insert(len(self.digit_list), values[0])
+            self.positions_list.insert(len(self.positions_list), Grid.positions_indices[int(values[1])-1])
+            if stimuli_group != "c": # we are not in "No stress" condition
                 self.bar_positions_list.insert(len(self.digit_list), values[2])
-                number += 1
+            #number += 1
 
     def run_experiment(self):
 
@@ -66,7 +68,7 @@ class Nback:
             #target = stimuli.TextLine(text=str(digit), text_size=80)
 
             target = stimuli.Rectangle((30,30), misc.constants.C_BLACK, 0, None, None, Grid.positions_locations[position])
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/" + str(digit) + "_low.wav")
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/" + str(digit) + ".wav")
             audio.preload()
             target.preload()
             target.plot(canvas)
@@ -134,11 +136,16 @@ class Nback:
                 self.exp.data.add([digit, position, None, None, None, "CR"])
 
     def play_aversive_sound_if_needed(self, feedback_bar):
+        if self.use_aversive_sound == False or feedback_bar.is_feedback_bar_on() == False:
+            return
         audio = None
-        if feedback_bar.is_in_danger():
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/Danger_1800.wav")
-        elif feedback_bar.is_in_red():
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio/Alarm_900_loud2.wav")
+        feedback_bar.update_trials_in_danger()
+        if feedback_bar.is_aversive_stimuli_fade_in():
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
+        elif feedback_bar.is_aversive_stimuli_fade_out():
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
+        elif feedback_bar.is_aversive_stimuli_full():
+            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
         if audio != None:
             audio.preload()
             audio.play()

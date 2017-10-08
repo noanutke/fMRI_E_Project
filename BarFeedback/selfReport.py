@@ -49,7 +49,8 @@ class SelfReport:
         self.marks_positions = []
         self.screen_height = screen_height
         self.screen_width = screen_width
-        lowest_height = 0 - screen_height/2
+        self.lowest_height = 0 - screen_height/2
+        self.highest_height = 0 + screen_height / 2
         self.number_of_lines = len(text_array)
         spaces = screen_height / (self.number_of_lines + 1)
         exp.mouse.show_cursor()
@@ -57,7 +58,7 @@ class SelfReport:
 
         index = 1
         for line_text in text_array:
-            position_y = lowest_height + spaces * index
+            position_y = self.highest_height - spaces * index
             self.line_positions_y.insert(len(self.line_positions_y), position_y)
             self.marks_positions.insert(len(self.marks_positions), None)
             self.write_text(line_text, self.edges_text[index-1], position_y, self.canvas)
