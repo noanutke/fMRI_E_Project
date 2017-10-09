@@ -18,7 +18,12 @@ class Grid:
     positions_indices2 = {"1": "TopLeft", "2": "TopMiddle", "3": "TopRight", "4": "Left", "5": "Right", \
                          "6": "BottomLeft", "7": "BottomMiddle", "8": "BottomRight"}
 
+    def __init__(self, should_paint_grid):
+        self.should_paint_grid = should_paint_grid
+
     def paint_grid(self, canvas):
+        if self.should_paint_grid == 0:
+            return
         line_horsizontal1 = stimuli.Line((-300, 80), (300, 80), 5)
         line_horsizontal2 = stimuli.Line((-300, -80), (300, -80), 5)
         line_vertical1 = stimuli.Line((-100, 200), (-100, -200), 5)
