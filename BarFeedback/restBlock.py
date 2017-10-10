@@ -3,12 +3,16 @@ import pandas as pd
 
 
 class RestBlock:
+    continue_key = misc.constants.K_SPACE
     show_instructions_for_seconds = 3
     show_cross_for_seconds = 1
 
-    def __init__(self, next_block, block_type, stimuli_type, exp):
+    def __init__(self, next_block, block_type, stimuli_type, exp, use_pilot_mode, folder):
+        self.use_pilot_mode = use_pilot_mode
         self.next_block = next_block
         self.canvas = stimuli.BlankScreen()
+        self.exp = exp
+        self.folder = folder
 
         self.paint_cross(exp)
         self.write_anticipation_text(next_block, block_type, stimuli_type, exp)
@@ -21,21 +25,32 @@ class RestBlock:
 
 
     def write_anticipation_text(self, n, block_type, stimuli_type, exp):
+        self.canvas = stimuli.BlankScreen()
+
+        if self.use_pilot_mode:
+            self.plot_instructions(n, block_type, stimuli_type)
+            self.canvas.present()
+            key, rt = self.exp.keyboard.wait([self.continue_key])
+            return
+
         time_left = self.show_instructions_for_seconds
         while time_left > 0:
-            self.canvas = stimuli.BlankScreen()
-            instructions = "C:/Users/NOA/fMRI_E_Project/Pictures/Slide" + n
-            if block_type == 'p':
-                instructions = instructions + "_" + block_type
-                if stimuli_type != None:
-                    instructions = instructions + "_" + stimuli_type
-            instructions = instructions + ".png"
+            self.plot_instructions(n, block_type, stimuli_type)
 
-            instruction_picture = stimuli.Picture(instructions)
-            instruction_picture.plot(self.canvas)
             time = stimuli.TextBox(str(time_left), [200,200], [0,-280], None, 40)
             time.plot(self.canvas)
             self.canvas.present()
             exp.clock.wait(1000)
             time_left -= 1
             #exp.clock.wait(self.show_instructions_for_seconds*1000)
+
+    def plot_instructions(self, n, block_type, stimuli_type):
+        instructions = "C:/Users/NOA/fMRI_E_Project/Pictures/"+ self.folder + "/Slide" + n
+        if block_type == 'p':
+            instructions = instructions + "_" + block_type
+            if stimuli_type != None:
+                instructions = instructions + "_" + stimuli_type
+        instructions = instructions + ".png"
+
+        instruction_picture = stimuli.Picture(instructions)
+        instruction_picture.plot(self.canvas)

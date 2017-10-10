@@ -16,8 +16,10 @@ class Nback:
     n=0
 
 
-    def __init__(self, develop_mode, use_aversive_sound):
-        self.use_aversive_sound = use_aversive_sound
+    def __init__(self, develop_mode, start_time):
+        self.start_time = start_time
+        self.use_aversive_sound = False
+        self.stress_condition = ""
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
         control.set_develop_mode(develop_mode)
@@ -41,6 +43,13 @@ class Nback:
         self.init_stimuli(n, stimuli_group, stimuli_type)
         self.is_practice = True if stimuli_group == 'p' else False
         self.run_experiment()
+        if stimuli_group == 'a':
+            self.use_aversive_sound = True
+            self.stress_condition = "sound"
+        elif stimuli_group == 'b':
+            self.stress_condition = "pain"
+        else:
+            self.stress_condition = "no"
 
     #digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
 
@@ -54,8 +63,8 @@ class Nback:
 
         number = 0
         for values in df1.values:
-            #if number > 2:
-               #break
+            if number > 0:
+               break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
             if stimuli_type == 'v' or stimuli_type == "both":
@@ -70,7 +79,7 @@ class Nback:
     def run_experiment(self):
 
         self.exp.data_variable_names = ["time", "digit", "position", "targetType", "response", "rt",\
-                                        "responseType"]
+                                        "responseType", "is success", "n", "stress condition", "is practice"]
 
         n=2
         ISI = 2500
@@ -145,8 +154,10 @@ class Nback:
         #control.end(goodbye_text="T:hank you very much...", goodbye_delay=2000)
 
     def save_trial_data(self, key, rt, counter):
+        time_from_start = datetime.datetime.now() - self.start_time
         if counter < self.n:
-            self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, None, None, None])
+            self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, None, None, None,\
+                               True, self.n, self.stress_condition, self.is_practice])
             self.correct_trials += 1
             return
 
@@ -154,41 +165,60 @@ class Nback:
             if self.digit != None and self.digit == self.digit_list[counter - self.n]:
                 if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                     self.exp.data.add([str(datetime.datetime.now()),
-                        self.digit, self.position_text, "Dual", self.single_target, rt, "Wrong Response"])
+                        self.digit, self.position_text, "Dual", self.single_target, rt, "Wrong Response",\
+                                     False , self.n, self.stress_condition, self.is_practice])
                 else:
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Auditory", self.single_target, rt,\
-                                      "Correct Response"])
+                                      "Correct Response", \
+                                      True, self.n, self.stress_condition, self.is_practice])
                     self.correct_trials += 1
             elif self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Visual", self.single_target, rt, "Correct Response"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Visual",\
+                                   self.single_target, rt, "Correct Response", \
+                                  True, self.n, self.stress_condition, self.is_practice])
                 self.correct_trials += 1
             else:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, self.single_target, rt, "FA"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None,\
+                                   self.single_target, rt, "FA", \
+                                      False, self.n, self.stress_condition, self.is_practice])
 
         elif key == self.dual_target:
             if self.digit != None and self.digit == self.digit_list[counter - self.n] and \
                 self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 self.exp.data.add(
-                    [str(datetime.datetime.now()), self.digit, self.position_text, "Dual", self.dual_target, rt, "Correct Response"])
+                    [str(datetime.datetime.now()), self.digit, self.position_text, "Dual",\
+                     self.dual_target, rt, "Correct Response", \
+                    True, self.n, self.stress_condition, self.is_practice])
                 self.correct_trials += 1
             elif self.digit != None and self.digit == self.digit_list[counter - self.n]:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Auditory", self.dual_target, rt, \
-                                   "Wrong Response"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
+                                   "Auditory", self.dual_target, rt, \
+                                   "Wrong Response", False, self.n, self.stress_condition, self.is_practice])
 
             elif self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 self.exp.data.add(
-                    [str(datetime.datetime.now()), self.digit, self.position_text, "Visual", self.dual_target, rt, "Wrong Response"])
+                    [str(datetime.datetime.now()), self.digit, self.position_text, "Visual", self.dual_target,\
+                     rt, "Wrong Response", \
+                        False , self.n, self.stress_condition, self.is_practice])
             else:
                 self.exp.data.add(
-                    [str(datetime.datetime.now()), self.digit, self.position_text, "None", self.dual_target, rt, "FA"])
+                    [str(datetime.datetime.now()), self.digit, self.position_text,\
+                     "None", self.dual_target, rt, "FA", \
+                    False, self.n, self.stress_condition, self.is_practice])
 
         else:
             if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Visual", None, None, "MISS"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
+                                   "Visual", None, None, "MISS", \
+                                  False, self.n, self.stress_condition, self.is_practice])
             elif self.digit != None and self.digit == self.digit_list[counter - self.n]:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Auditory", None, None, "MISS"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
+                                   "Auditory", None, None, "MISS", \
+                                  False, self.n, self.stress_condition, self.is_practice])
             else:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, None, None, "Correct Rejection"])
+                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
+                                   None, None, None, "Correct Rejection", \
+                                 True , self.n, self.stress_condition, self.is_practice])
                 self.correct_trials += 1
 
     def play_aversive_sound_if_needed(self, feedback_bar):
