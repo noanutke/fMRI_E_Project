@@ -42,14 +42,16 @@ class Nback:
         self.position_text = None
         self.init_stimuli(n, stimuli_group, stimuli_type)
         self.is_practice = True if stimuli_group == 'p' else False
-        self.run_experiment()
         if stimuli_group == 'a':
             self.use_aversive_sound = True
             self.stress_condition = "sound"
         elif stimuli_group == 'b':
             self.stress_condition = "pain"
+            self.use_aversive_sound = False
         else:
             self.stress_condition = "no"
+            self.use_aversive_sound = False
+        self.run_experiment()
 
     #digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
 
@@ -63,7 +65,7 @@ class Nback:
 
         number = 0
         for values in df1.values:
-            if number > 0:
+            if number > 1:
                break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
@@ -208,9 +210,14 @@ class Nback:
 
         else:
             if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
-                self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
-                                   "Visual", None, None, "MISS", \
-                                  False, self.n, self.stress_condition, self.is_practice])
+                if self.digit != None and self.digit == self.digit_list[counter - self.n]:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
+                                       "Dual", None, None, "MISS", \
+                                       False, self.n, self.stress_condition, self.is_practice])
+                else:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
+                                       "Visual", None, None, "MISS", \
+                                      False, self.n, self.stress_condition, self.is_practice])
             elif self.digit != None and self.digit == self.digit_list[counter - self.n]:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
                                    "Auditory", None, None, "MISS", \

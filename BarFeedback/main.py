@@ -50,7 +50,7 @@ tests = blocks_practice + blocks_no_stress
 
 all_blocks_pain_first = blocks_practice + blocks_no_stress + blocks_pain + blocks_sound
 
-all_blocks_sound_first = blocks_practice + blocks_no_stress + blocks_sound + blocks_pain
+all_blocks_sound_first = blocks_practice + blocks_no_stress  + blocks_sound + blocks_pain
 
 instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
@@ -58,11 +58,7 @@ use_develop_mode = True
 
 start_time = datetime.datetime.now()
 experiment = Nback(use_develop_mode, start_time) #use develop mode, use aversive sound
-stress_evaluation_log = WriteToExcel("stress_evaluation", ["block_type", "Stressful", "Painful", "Unpleasant"])
-cognitive_load_log = WriteToExcel("cognitive_load_evaluation", ["block_type",\
-                                                                "Mental Demand", "Physical Demand",\
-                                                                "Temporal Demand", "Performance",
-                                                                "Effort", "Frustration"])
+
 screen_height = 600
 screen_width = 800
 
@@ -70,22 +66,24 @@ continue_key = misc.constants.K_SPACE
 repeat_block_key = misc.constants.K_0
 index = 0
 block_type = None
-for block in tests:
+
+current_hour = str(datetime.datetime.now().hour)
+current_min = str(datetime.datetime.now().minute)
+stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" + current_min, ["block_type", "Stressful", "Painful", "Unpleasant"])
+cognitive_load_log = WriteToExcel("cognitive_load_evaluation_"  + current_hour + "_" + current_min, ["block_type",\
+                                                                "Mental Demand", "Physical Demand",\
+                                                                "Temporal Demand", "Performance",
+                                                                "Effort", "Frustration"])
+for block in all_blocks_pain_first:
     #if index > 2:
         #break
     stay_on_block = True
     stimuli_type = "both" if len(block) == 2 else block[2]
-    if block_type != block[1] and use_pilot_mode == True:
-        text_title = stimuli.TextLine("Press space to start new condition", (0, 0), text_size=(50))
-        canvas = stimuli.BlankScreen()
-        text_title.plot(canvas)
-        canvas.present()
-        key, rt = experiment.exp.keyboard.wait([continue_key])
 
     block_type = block[1]
     while stay_on_block:
 
-        if(index == 3): # no stress
+        if(block[0] == 1 and block_type == "c"): # no stress
             evaluate_stress("_before")
 
         rest = RestBlock(str(block[0]), block_type, stimuli_type, experiment.exp, use_pilot_mode,\
@@ -96,18 +94,25 @@ for block in tests:
         if block_type == 'p':
             key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
             if key is continue_key:
-                stay_on_block = True
-            else:
                 stay_on_block = False
+            else:
+                stay_on_block = True
         else:
-            stay_on_block = False
             evaluate_stress()
             evaluate_load()
-
+            if use_pilot_mode == True:
+                text_title = stimuli.TextLine("Press space to start new block", (0, 0), text_size=(50))
+                canvas = stimuli.BlankScreen()
+                text_title.plot(canvas)
+                canvas.present()
+                key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
+                if key is continue_key:
+                    stay_on_block = False
+                else:
+                    stay_on_block = True
     index += 1
 
 stress_evaluation_log.close_file()
-
 
 
 from expyriment import control, stimuli, io, design, misc
