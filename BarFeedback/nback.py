@@ -63,9 +63,11 @@ class Nback:
 
             if sensory_first.overlapping_with_position(pos):
                 self.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
                 return 'pain'
             elif auditory_first.overlapping_with_position(pos):
                 self.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
                 return 'sound'
             elif test_mode.overlapping_with_position(pos):
                 self.exp.mouse.hide_cursor()
@@ -99,7 +101,7 @@ class Nback:
 
     def init_stimuli(self, n, stimuli_group, stimuli_type="both"):
         # Assign spreadsheet filename to `file`
-        file = 'C:/Users/NOA/fMRI_E_Project/Nback_stimuli_bar_3.10.xlsx'
+        file = './Nback_stimuli_bar_3.10.xlsx'
 
         # Load spreadsheet
         xl = pd.ExcelFile(file)
@@ -117,7 +119,7 @@ class Nback:
                 self.bar_positions_list.insert(len(self.digit_list), values[2])
 
             self.trials_number += 1
-            if self.use_develop_mode:
+            if self.use_develop_mode == True:
                 number += 1
 
 
@@ -142,7 +144,7 @@ class Nback:
             target = None
             if len(self.digit_list) > 0:
                 self.digit = self.digit_list[trial]
-                audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/" + str(self.digit) + ".wav")
+                audio = stimuli.Audio("./audio_final/" + str(self.digit) + ".wav")
                 audio.preload()
             canvas = stimuli.BlankScreen()
             #target = stimuli.TextLine(text=str(digit), text_size=80)
@@ -280,11 +282,11 @@ class Nback:
         audio = None
         feedback_bar.update_trials_in_danger()
         if feedback_bar.is_aversive_stimuli_fade_in():
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
+            audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
         elif feedback_bar.is_aversive_stimuli_fade_out():
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
+            audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
         elif feedback_bar.is_aversive_stimuli_full():
-            audio = stimuli.Audio("C:/Users/NOA/fMRI_E_Project/audio_final/Alarm_-12db.wav")
+            audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
         if audio != None:
             audio.preload()
             audio.play()

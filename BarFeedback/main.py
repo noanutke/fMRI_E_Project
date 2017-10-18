@@ -44,7 +44,7 @@ def evaluate_load(block_title_suffix = ""):
 blocks_practice = [(1,'p', 'v'), (1,'p', 'a'), (1,'p')]
 blocks_no_stress = [(1,'c'), (2,'c'), (3, 'c')]
 blocks_sound = [(1,'a'), (2,'a'), (3, 'a')]
-blocks_pain = [(1, 'b'), (2, 'b'), (3, 'b')]
+blocks_pain = [(2,'a')]
 
 tests = blocks_practice + blocks_no_stress
 
@@ -67,6 +67,8 @@ if condition_first == 'pain':
     block_to_run = all_blocks_pain_first
 else:
     block_to_run = all_blocks_sound_first
+
+block_to_run = [(1,'a'), (2,'a')]
 
 
 

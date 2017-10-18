@@ -45,7 +45,7 @@ class RestBlock:
             #exp.clock.wait(self.show_instructions_for_seconds*1000)
 
     def plot_instructions(self, n, block_type, stimuli_type):
-        instructions = "C:/Users/NOA/fMRI_E_Project/Pictures/"+ self.folder + "/Slide" + n
+        instructions = "./pictures/"+ self.folder + "/Slide" + n
         if block_type == 'p':
             instructions = instructions + "_" + block_type
             if stimuli_type != None:
