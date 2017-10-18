@@ -8,7 +8,8 @@ import csv
 class WriteToExcel:
 
     def __init__(self, file_name, titles_row):
-        self.file = open(file_name + ".csv", 'w')
+        self.file_name = file_name + ".csv"
+        self.file = open(self.file_name, 'w')
         self.writer = csv.writer(self.file)
         self.writer.writerow(titles_row)
 
@@ -18,5 +19,8 @@ class WriteToExcel:
     def close_file(self):
         self.file.close()
 
+    def open_file(self):
+        self.file = open(self.file_name)
+        self.writer = csv.writer(self.file)
 
 

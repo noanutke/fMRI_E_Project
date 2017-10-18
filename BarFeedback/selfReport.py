@@ -53,7 +53,6 @@ class SelfReport:
         self.highest_height = 0 + screen_height / 2
         self.number_of_lines = len(text_array)
         spaces = screen_height / (self.number_of_lines + 1)
-        exp.mouse.show_cursor()
         self.canvas = stimuli.BlankScreen()
 
         index = 1
@@ -81,7 +80,7 @@ class SelfReport:
             self.paint_line(y_position, line_text[0], line_text[1], self.exp\
                             , self.canvas, self.marks_positions[index])
             index += 1
-
+        self.exp.mouse.show_cursor()
         self.canvas.present()
 
 
@@ -91,12 +90,14 @@ class SelfReport:
 
 
     def wait_for_marks(self):
+        self.exp.mouse.show_cursor()
         button_done = None
         while True:
             _id, pos, _rt = self.exp.mouse.wait_press()
             # process clicked position position
 
             if button_done != None and self.is_done(button_done[0], pos):
+                self.exp.mouse.hide_cursor()
                 return self.marks_positions
             line_index = 0
             for y_position in self.line_positions_y:

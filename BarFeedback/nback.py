@@ -16,10 +16,12 @@ class Nback:
     n=0
 
 
-    def __init__(self, develop_mode, start_time):
+    def __init__(self, develop_mode, start_time, screen_height):
+        self.screen_height = screen_height
         self.start_time = start_time
         self.use_aversive_sound = False
         self.stress_condition = ""
+        self.use_develop_mode = develop_mode
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
         control.set_develop_mode(develop_mode)
@@ -31,8 +33,48 @@ class Nback:
         self.correct_trials = 0
         self.trials_number = 0
 
+    def ask_for_parameters(self):
+        canvas = stimuli.BlankScreen()
+        auditory_first = stimuli.Rectangle(size=(100, 80), position=(150, 0))
+        text_auditory_first = stimuli.TextLine(text="Auditory First", position=auditory_first.position,
+                                 text_colour=misc.constants.C_WHITE)
+        sensory_first = stimuli.Rectangle(size=(100, 80), position=(-150, 0))
+        text_sensory_first = stimuli.TextLine(text="Sensory First", position=sensory_first.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        test_mode = stimuli.Rectangle(size=(100, 80), position=(0, -150))
+        text_test_mode = stimuli.TextLine(text="Test Mode", position=test_mode.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        auditory_first.plot(canvas)
+        text_auditory_first.plot(canvas)
+
+        sensory_first.plot(canvas)
+        text_sensory_first.plot(canvas)
+
+        test_mode.plot(canvas)
+        text_test_mode.plot(canvas)
+
+        self.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            _id, pos, _rt = self.exp.mouse.wait_press()
+
+            if sensory_first.overlapping_with_position(pos):
+                self.exp.mouse.hide_cursor()
+                return 'pain'
+            elif auditory_first.overlapping_with_position(pos):
+                self.exp.mouse.hide_cursor()
+                return 'sound'
+            elif test_mode.overlapping_with_position(pos):
+                self.exp.mouse.hide_cursor()
+                self.use_develop_mode = True
+                return 'sound'
 
     def run(self, n, stimuli_group, stimuli_type="both"):
+        self.trials_number = 0
+        self.correct_trials = 0
         self.digit_list = []
         self.positions_list = []
         self.bar_positions_list = []
@@ -65,7 +107,7 @@ class Nback:
 
         number = 0
         for values in df1.values:
-            if number > 1:
+            if number > 2:
                break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
@@ -75,7 +117,8 @@ class Nback:
                 self.bar_positions_list.insert(len(self.digit_list), values[2])
 
             self.trials_number += 1
-            number += 1
+            if self.use_develop_mode:
+                number += 1
 
 
     def run_experiment(self):
@@ -91,6 +134,9 @@ class Nback:
         feedback_bar = FeedbackBar(0, self.bar_positions_list)
 
         grid = Grid(len(self.positions_list))
+
+        pratice_trials = 0
+        practice_correct = 0
 
         for trial in range(trials_number):
             target = None

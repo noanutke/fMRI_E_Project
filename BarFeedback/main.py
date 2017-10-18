@@ -56,11 +56,19 @@ instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
 use_develop_mode = True
 
-start_time = datetime.datetime.now()
-experiment = Nback(use_develop_mode, start_time) #use develop mode, use aversive sound
-
 screen_height = 600
 screen_width = 800
+
+start_time = datetime.datetime.now()
+experiment = Nback(use_develop_mode, start_time, screen_height) #use develop mode, use aversive sound
+condition_first = experiment.ask_for_parameters()
+block_to_run = []
+if condition_first == 'pain':
+    block_to_run = all_blocks_pain_first
+else:
+    block_to_run = all_blocks_sound_first
+
+
 
 continue_key = misc.constants.K_SPACE
 repeat_block_key = misc.constants.K_0
@@ -73,8 +81,8 @@ stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" +
 cognitive_load_log = WriteToExcel("cognitive_load_evaluation_"  + current_hour + "_" + current_min, ["block_type",\
                                                                 "Mental Demand", "Physical Demand",\
                                                                 "Temporal Demand", "Performance",
-                                                                "Effort", "Frustration"])
-for block in all_blocks_pain_first:
+                                               "Effort", "Frustration"])
+for block in block_to_run:
     #if index > 2:
         #break
     stay_on_block = True
