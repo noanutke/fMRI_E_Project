@@ -44,7 +44,8 @@ def evaluate_load(block_title_suffix = ""):
 blocks_practice = [(1,'p', 'v'), (1,'p', 'a'), (1,'p')]
 blocks_no_stress = [(1,'c'), (2,'c'), (3, 'c')]
 blocks_sound = [(1,'a'), (2,'a'), (3, 'a')]
-blocks_pain = [(2,'a')]
+blocks_pain = [(1,'b'), (2,'b'), (3, 'b')]
+for_miki = [(1,'a'), (2,'a'), (3, 'a')]
 
 tests = blocks_practice + blocks_no_stress
 
@@ -60,7 +61,7 @@ screen_height = 600
 screen_width = 800
 
 start_time = datetime.datetime.now()
-experiment = Nback(use_develop_mode, start_time, screen_height) #use develop mode, use aversive sound
+experiment = Nback(use_develop_mode, start_time, screen_height, screen_width) #use develop mode, use aversive sound
 condition_first = experiment.ask_for_parameters()
 block_to_run = []
 if condition_first == 'pain':
@@ -68,7 +69,7 @@ if condition_first == 'pain':
 else:
     block_to_run = all_blocks_sound_first
 
-block_to_run = [(1,'a'), (2,'a')]
+#block_to_run = [(1,'a'), (2,'a')]
 
 
 
@@ -84,7 +85,7 @@ cognitive_load_log = WriteToExcel("cognitive_load_evaluation_"  + current_hour +
                                                                 "Mental Demand", "Physical Demand",\
                                                                 "Temporal Demand", "Performance",
                                                "Effort", "Frustration"])
-for block in block_to_run:
+for block in for_miki:
     #if index > 2:
         #break
     stay_on_block = True
