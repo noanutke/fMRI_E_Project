@@ -55,7 +55,7 @@ all_blocks_sound_first = blocks_practice + blocks_no_stress  + blocks_sound + bl
 
 instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
-use_develop_mode = True
+use_develop_mode = False
 
 screen_height = 600
 screen_width = 800
@@ -85,7 +85,7 @@ cognitive_load_log = WriteToExcel("cognitive_load_evaluation_"  + current_hour +
                                                                 "Mental Demand", "Physical Demand",\
                                                                 "Temporal Demand", "Performance",
                                                "Effort", "Frustration"])
-for block in for_miki:
+for block in block_to_run:
     #if index > 2:
         #break
     stay_on_block = True

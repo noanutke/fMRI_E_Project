@@ -299,7 +299,8 @@ class Nback:
         if self.use_aversive_sound == False or alarm_buttons.is_alarm_on() == False:
             return
         audio = None
-        audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
+        if alarm_buttons.is_alarm_on():
+            audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
 
         #else:
             #num = random.randint(1,3)

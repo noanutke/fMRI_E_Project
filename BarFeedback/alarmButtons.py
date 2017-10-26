@@ -3,7 +3,7 @@ from expyriment import control, stimuli, io, design, misc
 
 class AlarmButtons:
 
-    def __init__(self, screen_height, screen_width, alarms_order_list):
+    def __init__(self, screen_height, screen_width, alarms_order_list = []):
         self.button_rt = None
         self.button_accuracy = None
         self.text_rt = None
@@ -39,6 +39,10 @@ class AlarmButtons:
 
 
     def paint_alarm_buttons(self, canvas, is_error):
+        cross = stimuli.FixCross((50,50), (0,0), 5)
+        cross.plot(canvas)
+        if len(self.alarms_order_list) == 0:
+            return
         color_accuracy = misc.constants.C_GREEN
         color_rt = misc.constants.C_GREEN
 
