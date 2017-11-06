@@ -51,17 +51,23 @@ tests = blocks_practice + blocks_no_stress
 
 all_blocks_pain_first = blocks_practice + blocks_no_stress + blocks_pain + blocks_sound
 
-all_blocks_sound_first = blocks_practice + blocks_no_stress  + blocks_sound + blocks_pain
+
+
+all_blocks_sound_first = blocks_practice + blocks_no_stress  + blocks_sound
+
+
+all_blocks_sound_first = blocks_practice  + blocks_sound
 
 instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
 use_develop_mode = False
+flight_simulator_mode = True
 
 screen_height = 600
 screen_width = 800
 
 start_time = datetime.datetime.now()
-experiment = Nback(use_develop_mode, start_time, screen_height, screen_width) #use develop mode, use aversive sound
+experiment = Nback(use_develop_mode, start_time, screen_height, screen_width, True, False) #use develop mode, use aversive sound
 condition_first = experiment.ask_for_parameters()
 block_to_run = []
 if condition_first == 'pain':
@@ -69,7 +75,8 @@ if condition_first == 'pain':
 else:
     block_to_run = all_blocks_sound_first
 
-#block_to_run = [(1,'a'), (2,'a')]
+block_to_run = [(1,'a')]
+#block_to_run = [(1,'p'), (1,'a'), (2,'a')]
 
 
 

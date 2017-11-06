@@ -19,12 +19,11 @@ class FeedbackBar:
     mark_updates = []
     trials_in_danger = 0
 
-    def __init__(self, initial_mark_position, bar_positions_list):
-        if len(bar_positions_list) == 0:
-            return
-        for position in bar_positions_list:
-            self.mark_updates.insert(len(self.mark_updates), (position-50)/100*self.whole_length)
+    def __init__(self, initial_mark_position,  rt_average, show_alarms = False):
         self.mark_position = initial_mark_position
+        self.rt_average = rt_average
+        self.show_alarms = show_alarms
+        self.alarm_on = False
 
     def get_line_middle_position(lineStart, lineLength):
         return lineStart + lineLength / 2
@@ -42,11 +41,15 @@ class FeedbackBar:
         text = stimuli.TextLine("failure", position)
         text.plot(canvas)
 
-    def paint_whole_line(self, canvas):
+    def paint_whole_line(self, canvas, is_error, rt = None, updatePosition = False):
         cross = stimuli.FixCross((50,50), (0,0), 5)
         cross.plot(canvas)
-        if len(self.mark_updates) == 0:
+        if self.show_alarms == False:
             return
+
+        if updatePosition == True:
+            self.update_mark_position(is_error, rt)
+
         self.paint_line_part(self.red_part_length, self.line_start_position + self.red_part_length / 2, misc.constants.C_RED, canvas)
         self.paint_line_part(self.yellow_part_length, self.line_start_position + self.red_part_length + self.yellow_part_length / 2 \
                   , misc.constants.C_YELLOW, canvas)
@@ -68,10 +71,25 @@ class FeedbackBar:
     def set_mark_position(self, new_position):
         self.mark_position = new_position
 
-    def update_mark_position(self, is_success):
-        if self.mark_position + self.default_position_update * is_success > self.line_start_position and \
-                self.mark_position + self.default_position_update * is_success < self.line_start_position + self.whole_length:
-            self.mark_position += self.default_position_update * is_success
+    def update_mark_position(self, is_error, rt = None):
+        direction = 0
+        if is_error == True:
+            self.alarm_on = True
+            direction = -1
+        elif rt != None and rt > self.rt_average:
+            self.alarm_on = True
+            direction = -1
+        elif rt != None and rt <= self.rt_average:
+            self.alarm_on = False
+            direction = 1
+        else:
+            self.alarm_on = False
+            direction = 0
+
+        if self.mark_position + self.default_position_update * direction >= self.line_start_position and \
+                self.mark_position + self.default_position_update * direction <= self.line_start_position + self.whole_length:
+
+            self.mark_position += self.default_position_update * direction
 
     def default_update_mark_position(self):
         if len(self.mark_updates) == 0:
@@ -121,3 +139,7 @@ class FeedbackBar:
         if len(self.mark_updates) == 0:
             return False
         return True
+
+
+    def is_alarm_on(self):
+        return self.alarm_on
