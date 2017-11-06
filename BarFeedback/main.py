@@ -21,7 +21,7 @@ def evaluate_stress(block_title_suffix = ""):
                                    [["not at all", "extremely"], \
                                     ["not at all", "extremely"], ["not at all", "extremely"]], \
                                    ["how stressful do you feel",\
-                                    "how in pain do you feel", "how unpleasant do you feel"], \
+                                    "how unpleasant do you feel"], \
                                    screen_height, screen_width)
     row_to_insert = stress_evaluation.get_positions_array_in_precentage()
     row_to_insert.insert(0, str(block[0]) + block[1] + block_title_suffix)
@@ -60,7 +60,7 @@ all_blocks_sound_first = blocks_practice  + blocks_sound
 
 instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
-use_develop_mode = False
+use_develop_mode = True
 flight_simulator_mode = True
 
 screen_height = 600
@@ -87,7 +87,7 @@ block_type = None
 
 current_hour = str(datetime.datetime.now().hour)
 current_min = str(datetime.datetime.now().minute)
-stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" + current_min, ["block_type", "Stressful", "Painful", "Unpleasant"])
+stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" + current_min, ["block_type", "Stressful", "Unpleasant"])
 cognitive_load_log = WriteToExcel("cognitive_load_evaluation_"  + current_hour + "_" + current_min, ["block_type",\
                                                                 "Mental Demand", "Physical Demand",\
                                                                 "Temporal Demand", "Performance",

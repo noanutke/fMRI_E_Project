@@ -19,6 +19,7 @@ class FeedbackBar:
     mark_updates = []
     trials_in_danger = 0
 
+
     def __init__(self, initial_mark_position,  rt_average, show_alarms = False):
         self.mark_position = initial_mark_position
         self.rt_average = rt_average
@@ -70,6 +71,8 @@ class FeedbackBar:
 
     def set_mark_position(self, new_position):
         self.mark_position = new_position
+
+
 
     def update_mark_position(self, is_error, rt = None):
         direction = 0
