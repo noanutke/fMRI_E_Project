@@ -52,15 +52,12 @@ tests = blocks_practice + blocks_no_stress
 all_blocks_pain_first = blocks_practice + blocks_no_stress + blocks_pain + blocks_sound
 
 
+all_blocks_sound_first = blocks_practice + blocks_no_stress + blocks_sound
 
-all_blocks_sound_first = blocks_practice + blocks_no_stress  + blocks_sound
-
-
-all_blocks_sound_first = blocks_practice  + blocks_sound
 
 instructions_folder = "instructions_pilot_mode"
 use_pilot_mode = True
-use_develop_mode = True
+use_develop_mode = False
 flight_simulator_mode = True
 
 screen_height = 600
@@ -75,7 +72,7 @@ if condition_first == 'pain':
 else:
     block_to_run = all_blocks_sound_first
 
-block_to_run = [(1,'a')]
+block_to_run = all_blocks_sound_first
 #block_to_run = [(1,'p'), (1,'a'), (2,'a')]
 
 
@@ -97,17 +94,19 @@ for block in block_to_run:
         #break
     stay_on_block = True
     stimuli_type = "both" if len(block) == 2 else block[2]
-
     block_type = block[1]
+    with_stress = True if block_type == "a" else False
+
+    n = block[0]
     while stay_on_block:
 
         if(block[0] == 1 and block_type == "c"): # no stress
             evaluate_stress("_before")
 
-        rest = RestBlock(str(block[0]), block_type, stimuli_type, experiment.exp, use_pilot_mode,\
+        rest = RestBlock(str(n), block_type, stimuli_type, experiment.exp, use_pilot_mode,\
                          instructions_folder)
 
-        n_back = experiment.run(block[0], block_type, stimuli_type)
+        n_back = experiment.run(n, block_type, stimuli_type)
 
         if block_type == 'p':
             key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
@@ -118,16 +117,27 @@ for block in block_to_run:
         else:
             evaluate_stress()
             evaluate_load()
-            if use_pilot_mode == True:
-                text_title = stimuli.TextLine("Press space to start new block", (0, 0), text_size=(50))
-                canvas = stimuli.BlankScreen()
-                text_title.plot(canvas)
-                canvas.present()
-                key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
-                if key is continue_key:
-                    stay_on_block = False
-                else:
-                    stay_on_block = True
+
+        if with_stress:
+            canvas = stimuli.BlankScreen()
+            feedback = "./pictures/feedback/" + str(n) + "_feedback.png"
+            feedback_picture = stimuli.Picture(feedback)
+            feedback_picture.plot(canvas)
+            canvas.present()
+            key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
+            stay_on_block = False
+
+        if use_pilot_mode == True:
+            text_title = stimuli.TextLine("Press space to start new block", (0, 0), text_size=(50))
+            canvas = stimuli.BlankScreen()
+            text_title.plot(canvas)
+            canvas.present()
+            key, rt = experiment.exp.keyboard.wait([continue_key, repeat_block_key])
+            if key is continue_key:
+                stay_on_block = False
+            else:
+                stay_on_block = True
+
     index += 1
 
 stress_evaluation_log.close_file()
