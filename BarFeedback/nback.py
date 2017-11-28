@@ -18,7 +18,7 @@ class Nback:
     n=0
 
 
-    def __init__(self, develop_mode, start_time, screen_height, screen_width):
+    def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, use_bar):
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
@@ -29,13 +29,19 @@ class Nback:
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
         control.set_develop_mode(develop_mode)
         self.exp = control.initialize()
-        control.start(self.exp)
+        control.start(self.exp, auto_create_subject_id=start_fast, skip_ready_screen=start_fast)
         self.digit = None
         self.position = None
         self.is_practice = False
+        self.is_dual_practice = False
         self.correct_trials = 0
+        self.hit_trials = 0
+        self.rt_practice = 0
         self.trials_number = 0
         self.last_trial_error = False
+        self.last_trial_rt = None
+        self.show_alarms = False
+        self.use_bar = use_bar
 
     def ask_for_parameters(self):
         canvas = stimuli.BlankScreen()
@@ -81,6 +87,7 @@ class Nback:
     def run(self, n, stimuli_group, stimuli_type="both"):
         self.trials_number = 0
         self.correct_trials = 0
+        self.hit_trials = 0
         self.digit_list = []
         self.positions_list = []
         self.alarms_order_list = []
@@ -89,7 +96,11 @@ class Nback:
         self.position = None
         self.position_text = None
         self.init_stimuli(n, stimuli_group, stimuli_type)
+        self.show_alarms = True if stimuli_group != 'p' and stimuli_group != 'c' else False
         self.is_practice = True if stimuli_group == 'p' else False
+        self.is_dual_practice = True if stimuli_group == 'p' and stimuli_type == 'both' else False
+        if self.is_practice == True:
+            self.rt_practice = 0
         if stimuli_group == 'a':
             self.use_aversive_sound = True
             self.stress_condition = "sound"
@@ -99,6 +110,8 @@ class Nback:
         else:
             self.stress_condition = "no"
             self.use_aversive_sound = False
+
+        self.last_trial_error = False
         self.run_experiment()
 
     #digit_list = [1,1,1,2,5,3,5,5,7,8,9,10]
@@ -113,7 +126,7 @@ class Nback:
 
         number = 0
         for values in df1.values:
-            if number > 2:
+            if number > 40:
                break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
@@ -130,7 +143,8 @@ class Nback:
     def run_experiment(self):
 
         self.exp.data_variable_names = ["time", "digit", "position", "targetType", "response", "rt",\
-                                        "responseType", "is success", "n", "stress condition", "is practice"]
+                                        "responseType", "is success", "n", "stress condition", "is practice",\
+                                        "perfLevel", "alarmPlayed"]
 
         n=2
         ISI = 2500
@@ -138,7 +152,15 @@ class Nback:
         trials_number = len(self.positions_list) if len(self.positions_list) > 0 else len(self.digit_list)
 
         #feedback_bar = FeedbackBar(0, self.bar_positions_list)
-        alarmButtons = AlarmButtons(self.screen_height, self.screen_width, self.alarms_order_list)
+        alarmButtons = None
+        feedbackBar = None
+        rt_avarage = None
+        if self.rt_practice != 0:
+            rt_avarage = self.rt_practice;
+        if self.use_bar:
+            feedbackBar = FeedbackBar(0, rt_avarage, self.show_alarms)
+        else:
+            alarmButtons = AlarmButtons(self.screen_height, self.screen_width, self.rt_practice, self.show_alarms)
 
         grid = Grid(len(self.positions_list))
 
@@ -162,7 +184,10 @@ class Nback:
                 target.plot(canvas)
                 grid.paint_grid(canvas)
 
-            alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error)
+            if self.use_bar:
+                feedbackBar.paint_whole_line(canvas, self.last_trial_error, self.last_trial_rt, True)
+            else:
+                alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error, self.last_trial_rt)
             canvas.present()
             if self.digit != None:
                 audio.play()
@@ -172,8 +197,14 @@ class Nback:
                 # we have waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
-                alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error)
-                self.play_aversive_sound_if_needed(alarmButtons)
+                if self.use_bar:
+                    feedbackBar.paint_whole_line(canvas, False, None)
+                else:
+                    alarmButtons.paint_alarm_buttons(canvas, False, None)
+                if self.use_bar:
+                    self.play_aversive_sound_if_needed(feedbackBar)
+                else:
+                    self.play_aversive_sound_if_needed(alarmButtons)
                 grid.paint_grid(canvas)
                 timeToClear = canvas.present()
                 timeToUnload = 0
@@ -188,34 +219,50 @@ class Nback:
                 # we have now waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
-                alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error)
-                self.play_aversive_sound_if_needed(alarmButtons)
+                if self.use_bar:
+                    feedbackBar.paint_whole_line(canvas, False, None)
+                else:
+                    alarmButtons.paint_alarm_buttons(canvas, False, None)
+                if self.use_bar:
+                    self.play_aversive_sound_if_needed(feedbackBar)
+                else:
+                    self.play_aversive_sound_if_needed(alarmButtons)
                 grid.paint_grid(canvas)
                 timeToClear = canvas.present()
                 if target != None:
                     timeToUnload = target.unload()
                 self.exp.clock.wait(ISI - timeToUnload - timeToClear)
 
-            self.save_trial_data(key, rt, trial)
-            alarmButtons.update_trial()
+            self.save_trial_data(key, rt, trial, alarmButtons)
 
+        self.show_feedback_if_needed()
+        #control.end(goodbye_text="T:hank you very much...", goodbye_delay=2000)
+
+    def show_feedback_if_needed(self):
         if self.is_practice == True:
             canvas = stimuli.BlankScreen()
             text_title = stimuli.TextLine("Success Rate", (0,0), text_size=(50))
             success_rate = str(int(self.correct_trials / self.trials_number * 100))
             text_number = stimuli.TextLine(success_rate + "%", position=(0, -100),\
                                            text_size=(50))
+
+            if self.is_dual_practice and self.hit_trials != 0:
+                self.rt_practice = self.rt_practice / self.hit_trials
+
             text_title.plot(canvas)
             text_number.plot(canvas)
-            canvas.present()
-        #control.end(goodbye_text="T:hank you very much...", goodbye_delay=2000)
+            canvas.present();
 
-    def save_trial_data(self, key, rt, counter):
+    def save_trial_data(self, key, rt, counter, alarmButtons):
+        alarm_played = alarmButtons.get_alarm_played();
+        color = alarmButtons.get_color();
         time_from_start = datetime.datetime.now() - self.start_time
         if counter < self.n:
             self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, None, None, None,\
-                               True, self.n, self.stress_condition, self.is_practice])
+                               True, self.n, self.stress_condition, self.is_practice, color, alarm_played])
             self.correct_trials += 1
+            self.last_trial_error = False
+            self.last_trial_rt = None
             return
 
         if key == self.single_target:
@@ -223,25 +270,35 @@ class Nback:
                 if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                     self.exp.data.add([str(datetime.datetime.now()),
                         self.digit, self.position_text, "Dual", self.single_target, rt, "Wrong Response",\
-                                     False , self.n, self.stress_condition, self.is_practice])
+                                     False , self.n, self.stress_condition, self.is_practice, color, alarm_played])
                     self.last_trial_error = True
+                    self.last_trial_rt = None
                 else:
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Auditory", self.single_target, rt,\
                                       "Correct Response", \
-                                      True, self.n, self.stress_condition, self.is_practice])
+                                      True, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                     self.correct_trials += 1
+                    self.hit_trials += 1
+                    if self.is_dual_practice == True:
+                        self.rt_practice += rt
                     self.last_trial_error = False
+                    self.last_trial_rt = rt
             elif self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Visual",\
                                    self.single_target, rt, "Correct Response", \
-                                  True, self.n, self.stress_condition, self.is_practice])
+                                  True, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.correct_trials += 1
+                self.hit_trials += 1
+                if self.is_dual_practice == True:
+                    self.rt_practice += rt
                 self.last_trial_error = False
+                self.last_trial_rt = rt
             else:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None,\
                                    self.single_target, rt, "FA", \
-                                      False, self.n, self.stress_condition, self.is_practice])
+                                      False, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.last_trial_error = True
+                self.last_trial_rt = None
 
         elif key == self.dual_target:
             if self.digit != None and self.digit == self.digit_list[counter - self.n] and \
@@ -249,57 +306,70 @@ class Nback:
                 self.exp.data.add(
                     [str(datetime.datetime.now()), self.digit, self.position_text, "Dual",\
                      self.dual_target, rt, "Correct Response", \
-                    True, self.n, self.stress_condition, self.is_practice])
+                    True, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.correct_trials += 1
+                self.hit_trials += 1
+                if self.is_dual_practice == True:
+                    self.rt_practice += rt
                 self.last_trial_error = False
+                self.last_trial_rt = rt
             elif self.digit != None and self.digit == self.digit_list[counter - self.n]:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
                                    "Auditory", self.dual_target, rt, \
-                                   "Wrong Response", False, self.n, self.stress_condition, self.is_practice])
+                                   "Wrong Response", False, self.n, self.stress_condition, self.is_practice,\
+                                   color, alarm_played])
                 self.last_trial_error = True
+                self.last_trial_rt = None
 
             elif self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 self.exp.data.add(
                     [str(datetime.datetime.now()), self.digit, self.position_text, "Visual", self.dual_target,\
                      rt, "Wrong Response", \
-                        False , self.n, self.stress_condition, self.is_practice])
+                        False , self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.last_trial_error = True
+                self.last_trial_rt = None
             else:
                 self.exp.data.add(
                     [str(datetime.datetime.now()), self.digit, self.position_text,\
                      "None", self.dual_target, rt, "FA", \
-                    False, self.n, self.stress_condition, self.is_practice])
+                    False, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.last_trial_error = True
+                self.last_trial_rt = None
 
         else:
             if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 if self.digit != None and self.digit == self.digit_list[counter - self.n]:
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
                                        "Dual", None, None, "MISS", \
-                                       False, self.n, self.stress_condition, self.is_practice])
+                                       False, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                     self.last_trial_error = True
+                    self.last_trial_rt = None
                 else:
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
                                        "Visual", None, None, "MISS", \
-                                      False, self.n, self.stress_condition, self.is_practice])
+                                      False, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                     self.last_trial_error = True
+                    self.last_trial_rt = None
             elif self.digit != None and self.digit == self.digit_list[counter - self.n]:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
                                    "Auditory", None, None, "MISS", \
-                                  False, self.n, self.stress_condition, self.is_practice])
+                                  False, self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.last_trial_error = True
+                self.last_trial_rt = None
             else:
                 self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text,\
                                    None, None, None, "Correct Rejection", \
-                                 True , self.n, self.stress_condition, self.is_practice])
+                                 True , self.n, self.stress_condition, self.is_practice, color, alarm_played])
                 self.last_trial_error = False
+                self.last_trial_rt = None
                 self.correct_trials += 1
 
-    def play_aversive_sound_if_needed(self, alarm_buttons):
-        if self.use_aversive_sound == False or alarm_buttons.is_alarm_on() == False:
+    def play_aversive_sound_if_needed(self, alarm_class):
+        should_play_alarm = alarm_class.should_play_alarm()
+        if self.use_aversive_sound == False or should_play_alarm == False:
             return
         audio = None
-        if alarm_buttons.is_alarm_on():
+        if should_play_alarm == True:
             audio = stimuli.Audio("./audio_final/Alarm_-12db.wav")
 
         #else:
