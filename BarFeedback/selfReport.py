@@ -40,23 +40,42 @@ class SelfReport:
 
 
 
-    def __init__(self, exp, edges_text, text_array, screen_height, screen_width):
-        self.edges_text = edges_text
+    def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block):
         self.line_length = screen_width - 200
         self.exp = exp
-        self.text_array = text_array
         self.line_positions_y = []
         self.marks_positions = []
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.lowest_height = 0 - screen_height/2
         self.highest_height = 0 + screen_height / 2
-        self.number_of_lines = len(text_array)
-        spaces = screen_height / (self.number_of_lines + 1)
+
         self.canvas = stimuli.BlankScreen()
+        self.loadEdgedText =  [["Low", "High"], ["Low", "High"], ["Low", "High"], \
+                                           ["Good", "Poor"], ["Low", "High"], ["Low", "High"]]
+        self.loadTitleText = ["Mental Demand", "Physical Demand", \
+                                           "Temporal Demand", "Performance", \
+                                           "Effort", "Frustration"]
+        self.stressEdgesText = [["not at all", "extremely"], \
+                                    ["not at all", "extremely"], ["not at all", "extremely"]]
+        self.stressTitleText = ["how stressful do you feel",\
+                                    "how unpleasant do you feel"]
+
+        self.text_array = []
+        self.edges_text = []
+        if type == "stress":
+            self.text_array = self.stressTitleText
+            self.edges_text = self.stressEdgesText
+
+        else:
+            self.text_array = self.loadTitleText
+            self.edges_text = self.loadEdgedText
+
+        self.number_of_lines = len(self.text_array)
+        spaces = screen_height / (self.number_of_lines + 1)
 
         index = 1
-        for line_text in text_array:
+        for line_text in self.text_array:
             position_y = self.highest_height - spaces * index
             self.line_positions_y.insert(len(self.line_positions_y), position_y)
             self.marks_positions.insert(len(self.marks_positions), None)
@@ -67,6 +86,10 @@ class SelfReport:
         # wait for mouse or touch screen response
 
         self.wait_for_marks()
+        row_to_insert = self.get_positions_array_in_precentage()
+        row_to_insert.insert(0, block)
+        cognitive_load_log.add_row(row_to_insert)
+
 
     def paint_all_lines(self, button_done):
         self.canvas = stimuli.BlankScreen()

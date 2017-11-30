@@ -7,12 +7,14 @@ class RestBlock:
     show_instructions_for_seconds = 3
     show_cross_for_seconds = 1
 
-    def __init__(self, next_block, block_type, stimuli_type, exp, use_pilot_mode, folder):
+    def __init__(self, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
+                 folder="", file = ""):
         self.use_pilot_mode = use_pilot_mode
         self.next_block = next_block
         self.canvas = stimuli.BlankScreen()
         self.exp = exp
         self.folder = folder
+        self.file = file
 
         self.paint_cross(exp)
         self.write_anticipation_text(next_block, block_type, stimuli_type, exp)
@@ -45,12 +47,16 @@ class RestBlock:
             #exp.clock.wait(self.show_instructions_for_seconds*1000)
 
     def plot_instructions(self, n, block_type, stimuli_type):
-        instructions = "./pictures/"+ self.folder + "/Slide" + n
-        if block_type == 'p':
-            instructions = instructions + "_" + block_type
-            if stimuli_type != None:
-                instructions = instructions + "_" + stimuli_type
-        instructions = instructions + ".png"
+        instructions = ""
+        if self.file != "":
+            instructions = "../" + self.folder + "/" + self.file
+        else:
+            instructions = "./pictures/"+ self.folder + "/Slide" + n
+            if block_type == 'p':
+                instructions = instructions + "_" + block_type
+                if stimuli_type != None:
+                    instructions = instructions + "_" + stimuli_type
+            instructions = instructions + ".png"
 
         instruction_picture = stimuli.Picture(instructions)
         instruction_picture.plot(self.canvas)

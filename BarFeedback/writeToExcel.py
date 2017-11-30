@@ -7,11 +7,21 @@ import csv
 
 class WriteToExcel:
 
-    def __init__(self, file_name, titles_row):
+
+    def __init__(self, file_name, type):
+        self.stressHeaders = ["block_type", "Stressful", "Unpleasant"]
+        self.loadHeaders = ["block_type", "Mental Demand", "Physical Demand", "Temporal Demand", "Performance",\
+                       "Effort", "Frustration"]
         self.file_name = file_name + ".csv"
         self.file = open(self.file_name, 'w')
         self.writer = csv.writer(self.file)
+        titles_row = []
+        if type == "stress":
+            titles_row = self.stressHeaders
+        else:
+            titles_row = self.loadHeaders
         self.writer.writerow(titles_row)
+
 
     def add_row(self, row):
         self.writer.writerow(row)
