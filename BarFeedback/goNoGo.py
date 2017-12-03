@@ -25,7 +25,8 @@ class stroop:
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
-
+        self.use_aversive_sound = False
+        self.stress_condition = ""
         self.use_develop_mode = develop_mode
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK

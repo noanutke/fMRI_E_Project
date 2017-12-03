@@ -10,6 +10,7 @@ This example is appropriate to illustrates the use of the Android runtime enviro
 from __future__ import division
 
 from expyriment import control, stimuli, io, design, misc
+import copy
 
 # settings
 design.defaults.experiment_background_colour = misc.constants.C_GREY
@@ -19,32 +20,18 @@ design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
 class SelfReport:
     position_x = 0
     line_length = 700
-
-    def stress_evaluation_task(self, line_length, y_position, text_start, text_end, exp, canvas, mark_position):
-        # make button
-
-        line = stimuli.Rectangle(size=(line_length,3), position=(self.position_x, y_position),
-                    colour=misc.constants.C_BLACK)
-        line.plot(canvas)
-        if mark_position is not None:
-            # plot button and mark line on canvas
-
-            markline = stimuli.Rectangle(size=(1,25),
-                        position=(mark_position, line.position[1]),
-                        colour=misc.constants.C_RED)
-            markline.plot(canvas)
-        # present stimulus
-
-
-
-
+    line_index = 0
 
 
     def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block):
         self.line_length = screen_width - 200
+        self.line_start = 0 - self.line_length / 2
+        self.line_end = 0 + self.line_length / 2
         self.exp = exp
         self.line_positions_y = []
-        self.marks_positions = []
+        self.old_marks_positions = []
+        self.new_marks_positions = []
+        self.lines_updates = []
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.lowest_height = 0 - screen_height/2
@@ -78,13 +65,17 @@ class SelfReport:
         for line_text in self.text_array:
             position_y = self.highest_height - spaces * index
             self.line_positions_y.insert(len(self.line_positions_y), position_y)
-            self.marks_positions.insert(len(self.marks_positions), None)
+            self.lines_updates.insert(len(self.lines_updates), None)
+            self.new_marks_positions.insert(len(self.new_marks_positions), 0)
+            self.old_marks_positions.insert(len(self.old_marks_positions), 0)
             self.write_text(line_text, self.edges_text[index-1], position_y, self.canvas)
-            self.paint_line(position_y, line_text[0], line_text[1], exp, self.canvas, None)
+            self.paint_line(position_y, line_text[0], line_text[1], exp, self.canvas, 0)
             index += 1
         self.canvas.present()
         # wait for mouse or touch screen response
-
+        self.buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 40))
+        self.textA = stimuli.TextLine(text="done", position=self.buttonA.position,
+                                 text_colour=misc.constants.C_WHITE)
         self.wait_for_marks()
         row_to_insert = self.get_positions_array_in_precentage()
         row_to_insert.insert(0, block)
@@ -101,38 +92,89 @@ class SelfReport:
             y_position = self.line_positions_y[index]
             self.write_text(line_text, self.edges_text[index], y_position, self.canvas)
             self.paint_line(y_position, line_text[0], line_text[1], self.exp\
-                            , self.canvas, self.marks_positions[index])
+                            , self.canvas, self.new_marks_positions[index])
             index += 1
         self.exp.mouse.show_cursor()
         self.canvas.present()
+        self.old_marks_positions = self.new_marks_positions
+
+    def update_line(self, y_position, mark_position):
+        markline = stimuli.Rectangle(size=(1,25),
+                    position=(mark_position, y_position+16),
+                    colour=misc.constants.C_RED)
+        markline.plot(self.canvas)
+        cover =  stimuli.Rectangle(size=(1,25),
+                    position=(self.old_marks_positions[self.line_index], y_position+16),
+                    colour=misc.constants.C_GREY)
+        cover.plot(self.canvas)
+        self.canvas.present()
+        self.old_marks_positions[self.line_index] = mark_position
+
 
 
     def paint_line(self, y_position, text_start, text_end, exp, canvas, mark_position):
-        judgment = self.stress_evaluation_task(self.line_length, y_position, text_start, text_end,\
-                exp, canvas, mark_position)
+        # make button
+
+        line = stimuli.Rectangle(size=(self.line_length,3), position=(self.position_x, y_position),
+                    colour=misc.constants.C_BLACK)
+        line.plot(canvas)
+        if mark_position is not None:
+            # plot button and mark line on canvas
+
+            markline = stimuli.Rectangle(size=(1,25),
+                        position=(mark_position, line.position[1]+16),
+                        colour=misc.constants.C_RED)
+            markline.plot(canvas)
 
 
     def wait_for_marks(self):
-        self.exp.mouse.show_cursor()
+
         button_done = None
         while True:
-            _id, pos, _rt = self.exp.mouse.wait_press()
+            key, rt = self.exp.keyboard.wait([misc.constants.K_1, misc.constants.K_2, misc.constants.K_4])
             # process clicked position position
 
-            if button_done != None and self.is_done(button_done[0], pos):
-                self.exp.mouse.hide_cursor()
-                return self.marks_positions
-            line_index = 0
-            for y_position in self.line_positions_y:
-                mark_position = self.check_if_mouse_on_line(y_position, pos)
-                if mark_position != None:
-                    self.marks_positions[line_index] = mark_position
-                    if self.are_all_marked():
-                        button_done = self.add_done_button()
+            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions) and button_done != None:
+                return self.new_marks_positions
 
-                    self.paint_all_lines(button_done)
-                    break
-                line_index += 1
+            elif key == misc.constants.K_4 and self.line_index < len(self.new_marks_positions):
+                self.line_index += 1;
+            elif key == misc.constants.K_4:
+                self.line_index = 0;
+            elif key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions):
+                continue;
+
+            if key == misc.constants.K_1:
+                self.lines_updates[self.line_index] = True;
+                while True:
+                    key2, rt2 = self.exp.keyboard.wait(None, 50, True)
+                    if rt2 != None or key2 == misc.constants.K_1:
+                        break
+                    if self.new_marks_positions[self.line_index] <= self.line_start:
+                        break
+                    self.new_marks_positions[self.line_index] -= 5;
+                    self.update_line(self.line_positions_y[self.line_index], \
+                                     self.new_marks_positions[self.line_index])
+
+            if key == misc.constants.K_2:
+                self.lines_updates[self.line_index] = True;
+                while True:
+                    key2, rt2 = self.exp.keyboard.wait(None, 50, True)
+                    if rt2 != None or  key2 == misc.constants.K_2:
+                        break
+                    if self.new_marks_positions[self.line_index] >= self.line_end:
+                        break
+                    self.new_marks_positions[self.line_index] += 5;
+                    self.update_line(self.line_positions_y[self.line_index],\
+                                     self.new_marks_positions[self.line_index])
+
+
+
+            if self.are_all_marked():
+                button_done = self.add_done_button()
+
+
+
 
 
     def check_if_mouse_on_line(self, y_position, mark_position):
@@ -143,9 +185,12 @@ class SelfReport:
             return None
 
     def are_all_marked(self):
-        for mark_position in self.marks_positions:
-            if mark_position == None:
+        for update in self.lines_updates:
+            if update == None:
                 return False
+
+        self.buttonA.plot(self.canvas)
+        self.textA.plot(self.canvas)
         return True
 
     def is_done(self, button, position):
@@ -174,7 +219,7 @@ class SelfReport:
         precentage_array = []
         line_start = 0 - (self.line_length / 2)
         index = 0
-        for position in self.marks_positions:
+        for position in self.new_marks_positions:
             precentage_array.insert(index, (position - line_start) / self.line_length * 100)
             index += 1
         return precentage_array

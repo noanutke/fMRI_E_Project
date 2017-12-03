@@ -126,7 +126,7 @@ class Nback:
 
         number = 0
         for values in df1.values:
-            if number > 40:
+            if number > 0:
                break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
