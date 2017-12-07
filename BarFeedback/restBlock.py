@@ -48,8 +48,10 @@ class RestBlock:
 
     def plot_instructions(self, n, block_type, stimuli_type):
         instructions = ""
-        if self.file != "":
+        if self.file != "" and self.folder != "":
             instructions = "../" + self.folder + "/" + self.file
+        elif self.file != "" and self.folder == "":
+            instructions = self.file
         else:
             instructions = "./pictures/"+ self.folder + "/Slide" + n
             if block_type == 'p':

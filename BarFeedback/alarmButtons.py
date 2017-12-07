@@ -12,7 +12,7 @@ class AlarmButtons:
 
     def __init__(self, screen_height, screen_width, rt_average = 1000, show_alarms = False):
 
-        if rt_average is None:
+        if rt_average is None or rt_average == 0:
             self.rt_average = 1000
         else:
             self.rt_average = rt_average;
@@ -40,10 +40,11 @@ class AlarmButtons:
         return self.current_perf;
 
     def paint_alarm_buttons(self, canvas, is_error, rt = None):
+        time_delay = 0
         cross = stimuli.FixCross((50,50), (0,0), 5)
-        cross.plot(canvas)
+        time_delay += cross.plot(canvas)
         if self.show_alarms == False:
-            return
+            return 0;
 
         is_slow = False;
         if rt is not None:
@@ -68,7 +69,8 @@ class AlarmButtons:
         color = self.perfArrayColors[self.current_perf-1]
         size = (195,155)
         middleRect = stimuli.Rectangle(size, colour=color, position=(0,0))
-        middleRect.plot(canvas)
+        time_delay += middleRect.plot(canvas)
+        return time_delay
 
 
     def should_play_alarm(self):

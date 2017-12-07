@@ -134,14 +134,14 @@ class SelfReport:
             key, rt = self.exp.keyboard.wait([misc.constants.K_1, misc.constants.K_2, misc.constants.K_4])
             # process clicked position position
 
-            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions) and button_done != None:
+            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1 and button_done != None:
                 return self.new_marks_positions
 
-            elif key == misc.constants.K_4 and self.line_index < len(self.new_marks_positions):
+            elif key == misc.constants.K_4 and self.line_index < len(self.new_marks_positions)-1:
                 self.line_index += 1;
             elif key == misc.constants.K_4:
                 self.line_index = 0;
-            elif key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions):
+            elif key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1:
                 continue;
 
             if key == misc.constants.K_1:
@@ -153,6 +153,8 @@ class SelfReport:
                     if self.new_marks_positions[self.line_index] <= self.line_start:
                         break
                     self.new_marks_positions[self.line_index] -= 5;
+                    if self.are_all_marked():
+                        button_done = self.add_done_button()
                     self.update_line(self.line_positions_y[self.line_index], \
                                      self.new_marks_positions[self.line_index])
 
@@ -165,13 +167,14 @@ class SelfReport:
                     if self.new_marks_positions[self.line_index] >= self.line_end:
                         break
                     self.new_marks_positions[self.line_index] += 5;
-                    self.update_line(self.line_positions_y[self.line_index],\
+                    if self.are_all_marked():
+                        button_done = self.add_done_button()
+                    self.update_line(self.line_positions_y[self.line_index], \
                                      self.new_marks_positions[self.line_index])
 
 
 
-            if self.are_all_marked():
-                button_done = self.add_done_button()
+
 
 
 

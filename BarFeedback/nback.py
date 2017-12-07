@@ -9,16 +9,21 @@ from grid import Grid
 import datetime
 import pandas as pd
 import random
+from pylsl import StreamInfo, StreamOutlet
 
 
 class Nback:
     exp = None
-    single_target = misc.constants.K_RIGHT
-    dual_target = misc.constants.K_LEFT
+    single_target = misc.constants.K_4
+    dual_target = misc.constants.K_1
     n=0
 
 
     def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, use_bar):
+        self.show_cross_for_seconds = 1;
+        self.is_baseline = False
+        info = StreamInfo('MyMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
+        self.outlet = StreamOutlet(info)
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
@@ -43,47 +48,6 @@ class Nback:
         self.show_alarms = False
         self.use_bar = use_bar
 
-    def ask_for_parameters(self):
-        canvas = stimuli.BlankScreen()
-        auditory_first = stimuli.Rectangle(size=(100, 80), position=(150, 0))
-        text_auditory_first = stimuli.TextLine(text="Auditory First", position=auditory_first.position,
-                                 text_colour=misc.constants.C_WHITE)
-        sensory_first = stimuli.Rectangle(size=(100, 80), position=(-150, 0))
-        text_sensory_first = stimuli.TextLine(text="Sensory First", position=sensory_first.position,
-                                 text_colour=misc.constants.C_WHITE)
-
-        test_mode = stimuli.Rectangle(size=(100, 80), position=(0, -150))
-        text_test_mode = stimuli.TextLine(text="Test Mode", position=test_mode.position,
-                                 text_colour=misc.constants.C_WHITE)
-
-        auditory_first.plot(canvas)
-        text_auditory_first.plot(canvas)
-
-        sensory_first.plot(canvas)
-        text_sensory_first.plot(canvas)
-
-        test_mode.plot(canvas)
-        text_test_mode.plot(canvas)
-
-        self.exp.mouse.show_cursor()
-        canvas.present()
-
-        while True:
-            _id, pos, _rt = self.exp.mouse.wait_press()
-
-            if sensory_first.overlapping_with_position(pos):
-                self.exp.mouse.hide_cursor()
-                self.use_develop_mode = False
-                return 'pain'
-            elif auditory_first.overlapping_with_position(pos):
-                self.exp.mouse.hide_cursor()
-                self.use_develop_mode = False
-                return 'sound'
-            elif test_mode.overlapping_with_position(pos):
-                self.exp.mouse.hide_cursor()
-                self.use_develop_mode = True
-                return 'sound'
-
     def run(self, n, stimuli_group, stimuli_type="both"):
         self.trials_number = 0
         self.correct_trials = 0
@@ -95,22 +59,29 @@ class Nback:
         self.digit = None
         self.position = None
         self.position_text = None
-        self.init_stimuli(n, stimuli_group, stimuli_type)
-        self.show_alarms = True if stimuli_group != 'p' and stimuli_group != 'c' else False
+
+        self.show_alarms = True if stimuli_group != 'p' and stimuli_group != 'c' and stimuli_group != 'baseline' else False
         self.is_practice = True if stimuli_group == 'p' else False
         self.is_dual_practice = True if stimuli_group == 'p' and stimuli_type == 'both' else False
+        self.is_baseline = True if stimuli_group == "baseline" else False
+        if self.is_baseline == True:
+            self.outlet.push_sample(["startBlock_baseline"])
         if self.is_practice == True:
             self.rt_practice = 0
+            self.outlet.push_sample(["startBlock_practice"])
         if stimuli_group == 'a':
             self.use_aversive_sound = True
             self.stress_condition = "sound"
+            self.outlet.push_sample(["startBlock_stress_" + str(self.n)])
         elif stimuli_group == 'b':
             self.stress_condition = "pain"
             self.use_aversive_sound = False
         else:
             self.stress_condition = "no"
             self.use_aversive_sound = False
+            self.outlet.push_sample(["startBlock_noStress_" + str(self.n)])
 
+        self.init_stimuli(n, stimuli_group, stimuli_type)
         self.last_trial_error = False
         self.run_experiment()
 
@@ -118,15 +89,20 @@ class Nback:
 
     def init_stimuli(self, n, stimuli_group, stimuli_type="both"):
         # Assign spreadsheet filename to `file`
-        file = './Nback_stimuli_bar_3.10.xlsx'
+        file = './stimuli_file.xlsx'
 
         # Load spreadsheet
         xl = pd.ExcelFile(file)
-        df1 = xl.parse(str(n) + "back-" + stimuli_group)
+        df1 = None
+        if self.is_baseline == True:
+            df1 = xl.parse("baseline-" + str(n))
+        else:
+            df1 = xl.parse(str(n) + "back-" + stimuli_group)
+
 
         number = 0
         for values in df1.values:
-            if number > 0:
+            if number >= 3:
                break
             if stimuli_type == 'a' or stimuli_type == "both":
                 self.digit_list.insert(len(self.digit_list), values[0])
@@ -136,9 +112,15 @@ class Nback:
                 self.alarms_order_list.insert(len(self.digit_list), values[3])
 
             self.trials_number += 1
-            if self.use_develop_mode == True:
-                number += 1
+            number += 1
 
+
+    def paint_cross(self, exp):
+        cross = stimuli.FixCross((50, 50), (0, 0), 5)
+        canvas = stimuli.BlankScreen()
+        cross.plot(canvas)
+        canvas.present()
+        exp.clock.wait(self.show_cross_for_seconds * 1000)
 
     def run_experiment(self):
 
@@ -167,71 +149,81 @@ class Nback:
         pratice_trials = 0
         practice_correct = 0
 
+        self.paint_cross(self.exp)
+
         for trial in range(trials_number):
             target = None
             if len(self.digit_list) > 0:
                 self.digit = self.digit_list[trial]
-                audio = stimuli.Audio("./audio_final/" + str(self.digit) + ".wav")
+                audio = stimuli.Audio("./audio_final/" + str(int(self.digit)) + ".wav")
                 audio.preload()
             canvas = stimuli.BlankScreen()
             #target = stimuli.TextLine(text=str(digit), text_size=80)
-
+            time_delay = 0
             if len(self.positions_list) > 0:
                 self.position_text = self.positions_list[trial]
                 self.position = Grid.positions_locations[self.position_text]
                 target = stimuli.Rectangle((30,30), misc.constants.C_BLACK, 0, None, None, self.position)
-                target.preload()
-                target.plot(canvas)
-                grid.paint_grid(canvas)
+
+                time_delay += target.preload()
+                time_delay += target.plot(canvas)
+                time_delay += grid.paint_grid(canvas)
+
+            if self.digit != None:
+                audio.play()
+                self.outlet.push_sample(["audioStim_" + str(self.digit)])
+                audio.unload()
 
             if self.use_bar:
                 feedbackBar.paint_whole_line(canvas, self.last_trial_error, self.last_trial_rt, True)
             else:
-                alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error, self.last_trial_rt)
-            canvas.present()
-            if self.digit != None:
-                audio.play()
+                time_delay += alarmButtons.paint_alarm_buttons(canvas, self.last_trial_error, self.last_trial_rt)
+            time_delay += canvas.present()
+            if len(self.positions_list) > 0:
+                self.outlet.push_sample(["visualStim_" + self.position_text])
 
-            key, rt = self.exp.keyboard.wait([self.single_target, self.dual_target], stimuliDuration)
+            key, rt = self.exp.keyboard.wait([self.single_target, self.dual_target], stimuliDuration - time_delay)
             if key is None:
                 # we have waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
+                time_delay = 0
                 if self.use_bar:
-                    feedbackBar.paint_whole_line(canvas, False, None)
-                else:
-                    alarmButtons.paint_alarm_buttons(canvas, False, None)
-                if self.use_bar:
+                    time_delay += feedbackBar.paint_whole_line(canvas, False, None)
                     self.play_aversive_sound_if_needed(feedbackBar)
                 else:
+                    time_delay += alarmButtons.paint_alarm_buttons(canvas, False, None)
                     self.play_aversive_sound_if_needed(alarmButtons)
-                grid.paint_grid(canvas)
-                timeToClear = canvas.present()
-                timeToUnload = 0
+
+                time_delay += grid.paint_grid(canvas)
+                time_delay += canvas.present()
                 if target != None:
-                    timeToUnload = target.unload()
-                key, rt = self.exp.keyboard.wait([self.single_target, self.dual_target], ISI - timeToUnload - timeToClear)
+                    time_delay += target.unload()
+                key, rt = self.exp.keyboard.wait([self.single_target, self.dual_target], ISI - time_delay)
                 if key:
-                    self.exp.clock.wait(ISI - rt) # wait the rest of the ISI before going on
+                    self.outlet.push_sample(["response_" + str(key)])
+                    self.exp.clock.wait(ISI - rt - time_delay) # wait the rest of the ISI before going on
                     rt = rt + stimuliDuration
             else:
-                self.exp.clock.wait(stimuliDuration - rt) # wait the rest of the stimuliDuration before removing
+                self.outlet.push_sample(["response_" + str(key)])
+                self.exp.clock.wait(stimuliDuration - rt - time_delay) # wait the rest of the stimuliDuration before removing
                 # we have now waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
                 canvas = stimuli.BlankScreen()
+                time_delay = 0
                 if self.use_bar:
-                    feedbackBar.paint_whole_line(canvas, False, None)
+                    time_delay += feedbackBar.paint_whole_line(canvas, False, None)
                 else:
-                    alarmButtons.paint_alarm_buttons(canvas, False, None)
+                    time_delay += alarmButtons.paint_alarm_buttons(canvas, False, None)
                 if self.use_bar:
                     self.play_aversive_sound_if_needed(feedbackBar)
                 else:
                     self.play_aversive_sound_if_needed(alarmButtons)
-                grid.paint_grid(canvas)
-                timeToClear = canvas.present()
+                time_delay += grid.paint_grid(canvas)
+                time_delay += canvas.present()
                 if target != None:
-                    timeToUnload = target.unload()
-                self.exp.clock.wait(ISI - timeToUnload - timeToClear)
+                    time_delay += target.unload()
+                self.exp.clock.wait(ISI - time_delay)
 
             self.save_trial_data(key, rt, trial, alarmButtons)
 
@@ -257,6 +249,63 @@ class Nback:
         alarm_played = alarmButtons.get_alarm_played();
         color = alarmButtons.get_color();
         time_from_start = datetime.datetime.now() - self.start_time
+
+        if self.is_baseline:
+            if key == self.single_target:
+                if (self.digit == self.n and self.position != self.n) or (self.digit != self.n and self.position == self.n):
+                    target = "Auditory"
+                    if self.position == self.n:
+                        target = "Visual"
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, target,\
+                                       self.single_target, rt,\
+                                      "Correct Response", \
+                                      True, self.n, "baseline", self.is_practice, color, alarm_played])
+                elif self.position == self.n and self.digit == self.n:
+                    self.exp.data.add([str(datetime.datetime.now()),
+                        self.digit, self.position_text, "Dual", self.single_target, rt, "Wrong Response",\
+                                     False , self.n, "baseline", self.is_practice, color, alarm_played])
+                else:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, \
+                                       self.single_target, rt, "FA", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+            elif key == self.dual_target:
+                if self.position == self.n and self.digit == self.n:
+                    self.exp.data.add(
+                        [str(datetime.datetime.now()), self.digit, self.position_text, "Dual", \
+                         self.dual_target, rt, "Correct Response", \
+                         True, self.n, "baseline", self.is_practice, color, alarm_played])
+                elif self.position == self.n:
+                    self.exp.data.add([str(datetime.datetime.now()),
+                        self.digit, self.position_text, "Visual", self.single_target, rt, "Wrong Response",\
+                                     False , self.n, "baseline", self.is_practice, color, alarm_played])
+                elif self.digit == self.n:
+                    self.exp.data.add([str(datetime.datetime.now()),
+                                       self.digit, self.position_text, "Auditory", self.single_target, rt,
+                                       "Wrong Response", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+                else:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, \
+                                       self.single_target, rt, "FA", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+            else:
+                if self.position == self.n and self.digit == self.n:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
+                                       "Dual", None, None, "MISS", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+                elif self.position == self.n :
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
+                                       "Visual", None, None, "MISS", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+                elif self.digit == self.n:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
+                                       "Auditory", None, None, "MISS", \
+                                       False, self.n, "baseline", self.is_practice, color, alarm_played])
+                else:
+                    self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, \
+                                       None, None, None, "Correct Rejection", \
+                                       True, self.n, "baseline", self.is_practice, color, alarm_played])
+
+
         if counter < self.n:
             self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, None, None, None,\
                                True, self.n, self.stress_condition, self.is_practice, color, alarm_played])
@@ -379,3 +428,4 @@ class Nback:
         if audio != None:
             audio.preload()
             audio.play()
+            self.outlet.push_sample(["alarm"])

@@ -7,17 +7,18 @@ from expyriment import control, stimuli, design, misc, io
 import datetime
 
 class runNbackTask:
-    instructions_folder = "instructions_pilot_mode"
+    instructions_folder = "instructions_pilot_mode_new"
     use_pilot_mode = True
     use_develop_mode = True
     flight_simulator_mode = True
     blocks_practice = [(1, 'p', 'v'), (1, 'p', 'a'), (1, 'p')]
     blocks_no_stress = [(1, 'c'), (2, 'c'), (3, 'c')]
     blocks_sound = [(1, 'a'), (2, 'a'), (3, 'a')]
+    blocks_baseline= [(4, 'baseline'), (5, 'baseline')]
     blocks_pain = [(1, 'b'), (2, 'b'), (3, 'b')]
     for_miki = [(1, 'a'), (2, 'a'), (3, 'a')]
     tests = blocks_practice + blocks_no_stress
-    block_to_run = blocks_practice + blocks_sound
+    block_to_run = blocks_practice + blocks_baseline + blocks_sound
 
     continue_key = misc.constants.K_SPACE
     repeat_block_key = misc.constants.K_0
@@ -25,7 +26,7 @@ class runNbackTask:
     '''
     testing!!!!!!!!!!!!
     '''
-    block_to_run = blocks_sound
+    block_to_run = blocks_baseline
 
     def __init__(self, screen_height, screen_width):
         self.start_time = datetime.datetime.now()
@@ -36,10 +37,59 @@ class runNbackTask:
         self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_" + current_hour + "_" + current_min, "load")
         self.screen_height = screen_height
         self.screen_width = screen_width
-
+        self.block_to_run = self.choose_blocks_to_run()
         self.run_blocks();
         self.stress_evaluation_log.close_file()
         self.cognitive_load_log.close_file()
+
+    def choose_blocks_to_run(self):
+        condition = self.ask_for_parameters()
+        if condition == "practice":
+            return self.blocks_practice
+        elif condition == "stress":
+            return self.blocks_sound
+        else:
+            return self.blocks_no_stress
+
+    def ask_for_parameters(self):
+        canvas = stimuli.BlankScreen()
+        Practice = stimuli.Rectangle(size=(100, 80), position=(150, 0))
+        text_Practice = stimuli.TextLine(text="Practice", position=Practice.position,
+                                 text_colour=misc.constants.C_WHITE)
+        Basic = stimuli.Rectangle(size=(100, 80), position=(-150, 0))
+        text_Basic = stimuli.TextLine(text="Basic", position=Basic.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        Manipulation = stimuli.Rectangle(size=(100, 80), position=(0, -150))
+        text_Manipulation = stimuli.TextLine(text="Manipulation", position=Manipulation.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        Practice.plot(canvas)
+        text_Practice.plot(canvas)
+
+        Basic.plot(canvas)
+        text_Basic.plot(canvas)
+
+        Manipulation.plot(canvas)
+        text_Manipulation.plot(canvas)
+
+        self.experiment.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            _id, pos, _rt = self.experiment.exp.mouse.wait_press()
+
+            if Practice.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
+                return 'practice'
+            elif Basic.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
+                return 'noStress'
+            elif Manipulation.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return 'stress'
 
     def run_blocks(self):
         for block in self.block_to_run:
@@ -48,6 +98,7 @@ class runNbackTask:
             stay_on_block = True
             stimuli_type = "both" if len(block) == 2 else block[2]
             block_type = block[1]
+
             with_stress = True if block_type == "a" else False
 
             n = block[0]
@@ -56,8 +107,14 @@ class runNbackTask:
                 if (block[0] == 1 and block_type == "c"):  # no stress
                     self.evaluate_stress(str(block[0]) + block[1] + "_before")
 
-                rest = RestBlock(str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
-                                 self.instructions_folder)
+                if block_type == "baseline":
+                    stimuli_type = "both"
+                    rest = RestBlock(str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
+                                     "", "./pictures/"+\
+                                     self.instructions_folder + "/Slide" + str(n) + "_baseline.png")
+                else:
+                    rest = RestBlock(str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
+                                     self.instructions_folder)
 
                 n_back = self.experiment.run(n, block_type, stimuli_type)
 
