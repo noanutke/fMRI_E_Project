@@ -11,6 +11,7 @@ from __future__ import division
 
 from expyriment import control, stimuli, io, design, misc
 import copy
+import time
 
 # settings
 design.defaults.experiment_background_colour = misc.constants.C_GREY
@@ -23,7 +24,8 @@ class SelfReport:
     line_index = 0
 
 
-    def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block):
+    def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block, outlet):
+        self.outlet = outlet
         self.line_length = screen_width - 200
         self.line_start = 0 - self.line_length / 2
         self.line_end = 0 + self.line_length / 2
@@ -37,6 +39,7 @@ class SelfReport:
         self.lowest_height = 0 - screen_height/2
         self.highest_height = 0 + screen_height / 2
 
+
         self.canvas = stimuli.BlankScreen()
         self.loadEdgedText =  [["Low", "High"], ["Low", "High"], ["Low", "High"], \
                                            ["Good", "Poor"], ["Low", "High"], ["Low", "High"]]
@@ -47,16 +50,18 @@ class SelfReport:
                                     ["not at all", "extremely"], ["not at all", "extremely"]]
         self.stressTitleText = ["how stressful do you feel",\
                                     "how unpleasant do you feel"]
-
+        self.wait_for_miliseconds = 3000
         self.text_array = []
         self.edges_text = []
         if type == "stress":
             self.text_array = self.stressTitleText
             self.edges_text = self.stressEdgesText
+            self.wait_for_miliseconds = 8000
 
         else:
             self.text_array = self.loadTitleText
             self.edges_text = self.loadEdgedText
+            self.wait_for_miliseconds = 25000
 
         self.number_of_lines = len(self.text_array)
         spaces = screen_height / (self.number_of_lines + 1)
@@ -73,20 +78,18 @@ class SelfReport:
             index += 1
         self.canvas.present()
         # wait for mouse or touch screen response
-        self.buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 40))
-        self.textA = stimuli.TextLine(text="done", position=self.buttonA.position,
-                                 text_colour=misc.constants.C_WHITE)
+
+        self.outlet.push_sample(["start_selfEvaluation_" + type])
         self.wait_for_marks()
+        self.outlet.push_sample(["end_selfEvaluation_" + type])
         row_to_insert = self.get_positions_array_in_precentage()
         row_to_insert.insert(0, block)
         cognitive_load_log.add_row(row_to_insert)
 
 
-    def paint_all_lines(self, button_done):
+    def paint_all_lines(self):
         self.canvas = stimuli.BlankScreen()
-        if button_done != None:
-            button_done[0].plot(self.canvas)
-            button_done[1].plot(self.canvas)
+
         index = 0
         for line_text in self.text_array:
             y_position = self.line_positions_y[index]
@@ -113,13 +116,12 @@ class SelfReport:
 
 
     def paint_line(self, y_position, text_start, text_end, exp, canvas, mark_position):
-        # make button
 
         line = stimuli.Rectangle(size=(self.line_length,3), position=(self.position_x, y_position),
                     colour=misc.constants.C_BLACK)
         line.plot(canvas)
         if mark_position is not None:
-            # plot button and mark line on canvas
+
 
             markline = stimuli.Rectangle(size=(1,25),
                         position=(mark_position, line.position[1]+16),
@@ -128,13 +130,47 @@ class SelfReport:
 
 
     def wait_for_marks(self):
+        game1 = io.GamePad(0, True, True)
+        while self.wait_for_miliseconds > 5:
 
-        button_done = None
-        while True:
-            key, rt = self.exp.keyboard.wait([misc.constants.K_1, misc.constants.K_2, misc.constants.K_4])
+
+
+            button, rt = game1.wait_press(duration=10)
+            #key, rt = self.exp.keyboard.wait([misc.constants.K_1, misc.constants.K_2, misc.constants.K_4],\
+                                             #self.wait_for_miliseconds)
+            axis0 = 0
+            axis0 = game1.get_axis(0)
+
+
+            if rt == None:
+                rt = 10
+            self.wait_for_miliseconds -= rt;
             # process clicked position position
 
-            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1 and button_done != None:
+            if button != None:
+                self.exp.clock.wait(200)
+                self.wait_for_miliseconds -= 200;
+            if button != None and self.line_index < len(self.new_marks_positions)-1:
+                self.line_index += 1;
+            elif button != None :
+                self.line_index = 0;
+            elif button != None  and self.line_index == len(self.new_marks_positions)-1:
+                continue;
+
+            if self.new_marks_positions[self.line_index] + axis0 < self.line_start or \
+                self.new_marks_positions[self.line_index] + axis0 > self.line_end:
+                break
+
+
+            if abs(axis0) > 0.1:
+                self.new_marks_positions[self.line_index] += axis0*3;
+
+            if abs(self.new_marks_positions[self.line_index] - \
+            self.old_marks_positions[self.line_index]) > 1:
+                self.update_line(self.line_positions_y[self.line_index], \
+                                 self.new_marks_positions[self.line_index])
+    '''
+            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1:
                 return self.new_marks_positions
 
             elif key == misc.constants.K_4 and self.line_index < len(self.new_marks_positions)-1:
@@ -153,10 +189,15 @@ class SelfReport:
                     if self.new_marks_positions[self.line_index] <= self.line_start:
                         break
                     self.new_marks_positions[self.line_index] -= 5;
-                    if self.are_all_marked():
-                        button_done = self.add_done_button()
+
                     self.update_line(self.line_positions_y[self.line_index], \
                                      self.new_marks_positions[self.line_index])
+
+                    if rt2 == None:
+                        rt2 = 50
+                    self.wait_for_miliseconds -= rt2
+                    if self.wait_for_miliseconds < 5:
+                        break
 
             if key == misc.constants.K_2:
                 self.lines_updates[self.line_index] = True;
@@ -167,18 +208,16 @@ class SelfReport:
                     if self.new_marks_positions[self.line_index] >= self.line_end:
                         break
                     self.new_marks_positions[self.line_index] += 5;
-                    if self.are_all_marked():
-                        button_done = self.add_done_button()
+
                     self.update_line(self.line_positions_y[self.line_index], \
                                      self.new_marks_positions[self.line_index])
 
-
-
-
-
-
-
-
+                    if rt2 == None:
+                        rt2 = 50
+                    self.wait_for_miliseconds -= rt2
+                    if self.wait_for_miliseconds < 5:
+                        break
+    '''
 
     def check_if_mouse_on_line(self, y_position, mark_position):
         if abs(mark_position[1] - y_position) <= 50 and \
@@ -187,26 +226,6 @@ class SelfReport:
         else:
             return None
 
-    def are_all_marked(self):
-        for update in self.lines_updates:
-            if update == None:
-                return False
-
-        self.buttonA.plot(self.canvas)
-        self.textA.plot(self.canvas)
-        return True
-
-    def is_done(self, button, position):
-        if button.overlapping_with_position(position):
-            return True
-        return False
-
-    def add_done_button(self):
-        buttonA = stimuli.Rectangle(size=(80, 40), position=(0, 0 - self.screen_height/2 + 40))
-        textA = stimuli.TextLine(text="done", position=buttonA.position,
-                                 text_colour=misc.constants.C_WHITE)
-
-        return [buttonA, textA]
 
     def write_text(self, text_above, text_edges, y_position, canvas):
         line_start = 0 - (self.line_length / 2)

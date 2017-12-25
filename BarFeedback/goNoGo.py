@@ -11,22 +11,19 @@ import pandas as pd
 import random
 
 
-class stroop:
+class goNoGo:
     exp = None
-    folder = 'NewStroop'
-    trials_number = 16
-    yellow_key = misc.constants.K_1
-    green_key = misc.constants.K_2
-    blue_key = misc.constants.K_3
-    red_key = misc.constants.K_4
+    folder = 'GoNoGo'
+    trials_number = 26
+    go_key_1= misc.constants.K_1
+    go_key_2 = misc.constants.K_3
 
 
     def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, use_bar):
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
-        self.use_aversive_sound = False
-        self.stress_condition = ""
+
         self.use_develop_mode = develop_mode
         design.defaults.experiment_background_colour = misc.constants.C_GREY
         design.defaults.experiment_foreground_colour = misc.constants.C_BLACK

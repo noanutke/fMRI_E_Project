@@ -118,13 +118,16 @@ class stroop:
 
         for trial_index in range(0, self.trials_number):
             canvas = stimuli.BlankScreen()
+            time_delay = 0
             picture_word = stimuli.Picture(self.get_word_picture_path(self.wordsEnglish[trial_index],\
                                                                       self.colors[trial_index]))
             picture_buttons = stimuli.Picture("../NewStroop/words/buttons.png", position=(0,200))
 
-            picture_word.plot(canvas)
-            picture_buttons.plot(canvas)
-            canvas.present();
+            time_delay += picture_buttons.preload()
+            time_delay += picture_word.preload()
+            time_delay += picture_word.plot(canvas)
+            time_delay += picture_buttons.plot(canvas)
+            time_delay += canvas.present();
 
             key, rt = self.exp.keyboard.wait([self.yellow_key, self.green_key, self.blue_key, self.red_key]\
                                              , self.duration)

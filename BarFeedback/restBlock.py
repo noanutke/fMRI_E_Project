@@ -4,10 +4,10 @@ import pandas as pd
 
 class RestBlock:
     continue_key = misc.constants.K_SPACE
-    show_instructions_for_seconds = 3
+    show_instructions_for_seconds = 1
     show_cross_for_seconds = 1
 
-    def __init__(self, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
+    def __init__(self, lsl_stream, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
                  folder="", file = ""):
         self.use_pilot_mode = use_pilot_mode
         self.next_block = next_block
@@ -15,11 +15,18 @@ class RestBlock:
         self.exp = exp
         self.folder = folder
         self.file = file
+        self.lsl_stream = lsl_stream
 
-        self.paint_cross(exp)
+        self.lsl_stream.push_sample(["start_instructions"])
         self.write_anticipation_text(next_block, block_type, stimuli_type, exp)
+        self.lsl_stream.push_sample(["end_instructions"])
+        self.lsl_stream.push_sample(["start_fixation"])
+        self.paint_cross(exp)
+        self.lsl_stream\
+            .push_sample(["end_fixation"])
 
     def paint_cross(self, exp):
+        self.canvas = stimuli.BlankScreen()
         cross = stimuli.FixCross((50, 50), (0, 0), 5)
         cross.plot(self.canvas)
         self.canvas.present()
@@ -32,7 +39,7 @@ class RestBlock:
         if self.use_pilot_mode:
             self.plot_instructions(n, block_type, stimuli_type)
             self.canvas.present()
-            key, rt = self.exp.keyboard.wait([self.continue_key])
+            exp.clock.wait(self.show_instructions_for_seconds * 1000)
             return
 
         time_left = self.show_instructions_for_seconds
