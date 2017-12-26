@@ -21,10 +21,11 @@ class stroop:
     red_key = misc.constants.K_4
 
 
-    def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, use_bar):
+    def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, lsl_stream):
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
+        self.outlet = lsl_stream
 
         self.use_develop_mode = develop_mode
         design.defaults.experiment_background_colour = misc.constants.C_GREY
@@ -44,13 +45,20 @@ class stroop:
     def run(self, block):
         self.block = block
         self.is_practice = True if self.block == "p" else False
+        if self.is_practice == True:
+            self.outlet.push_sample(["startBlock_practice"])
         self.init_stimuli(block)
         if block == "high":
             self.isi = 2500
             self.duration = 500
+            self.outlet.push_sample(["startBlock_high"])
         elif block == "medium":
             self.isi = 2000
             self.duration = 1000
+            self.outlet.push_sample(["startBlock_medium"])
+        else:
+            self.outlet.push_sample(["startBlock_low"])
+
 
         self.run_experiment()
 
@@ -77,7 +85,7 @@ class stroop:
         tempConditions = []
         tempWordsEnglish = []
         for values in df1.values:
-            tempWords.insert(len(tempWords), values[0])
+            tempWords.insert(0, values[0])
             tempColors.insert(len(tempColors), values[1])
             tempWordsEnglish.insert(len(tempWordsEnglish), values[2])
             tempConditions.insert(len(tempConditions), values[3])
@@ -85,7 +93,7 @@ class stroop:
         indicesList = list(range(0,16));
         random.shuffle(indicesList)
         for index in indicesList:
-            self.words.insert(len(self.words), self.from_english_word_to_hebrew(tempWordsEnglish[index]))
+            self.words.insert(0, self.from_english_word_to_hebrew(tempWordsEnglish[index]))
             self.colors.insert(len(self.colors), tempColors[index])
             self.wordsEnglish.insert(len(self.wordsEnglish), tempWordsEnglish[index])
             self.conditions.insert(len(self.conditions), tempConditions[index])
@@ -94,9 +102,12 @@ class stroop:
         if self.block == "baseline":
             for index in range(self.trials_number):
                 if self.conditions[index] == "incong":
-                    color_index = random.randint(0,len(possible_colors)-1)
-                    self.colors = possible_colors[color_index]
-                    possible_colors.remove(possible_colors[color_index])
+                    not_found = True
+                    while not_found == True:
+                        color_index = random.randint(0,len(possible_colors)-1)
+                        if possible_colors[color_index] != self.wordsEnglish[index]:
+                            self.colors[index] = possible_colors[color_index]
+                            not_found = False
 
     def convert_colors(self, color_string):
         if color_string == "red":
@@ -154,8 +165,10 @@ class stroop:
             return False
 
     def save_trial_data(self, key, rt, trial_index):
+        is_success = self.is_success(self.wordsEnglish[trial_index], key)
+        self.outlet.push_sample(["isSuccess_" + str(is_success) + "_condition_" + self.conditions[trial_index]])
         self.exp.data.add([str(datetime.datetime.now()),
                            self.words[trial_index], self.colors[trial_index], "Dual", self.conditions[trial_index], \
-                           key, rt, self.is_success(self.wordsEnglish[trial_index], key), self.is_practice \
+                           key, rt, is_success, self.is_practice \
                               ,self.block])
 

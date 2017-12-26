@@ -61,7 +61,7 @@ class SelfReport:
         else:
             self.text_array = self.loadTitleText
             self.edges_text = self.loadEdgedText
-            self.wait_for_miliseconds = 25000
+            self.wait_for_miliseconds = 2500
 
         self.number_of_lines = len(self.text_array)
         spaces = screen_height / (self.number_of_lines + 1)

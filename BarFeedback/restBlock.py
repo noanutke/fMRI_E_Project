@@ -4,7 +4,7 @@ import pandas as pd
 
 class RestBlock:
     continue_key = misc.constants.K_SPACE
-    show_instructions_for_seconds = 1
+    show_instructions_for_seconds = 5
     show_cross_for_seconds = 1
 
     def __init__(self, lsl_stream, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
