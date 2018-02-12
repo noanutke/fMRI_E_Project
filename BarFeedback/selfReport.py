@@ -12,6 +12,7 @@ from __future__ import division
 from expyriment import control, stimuli, io, design, misc
 import copy
 import time
+#from psychopy import parallel
 
 # settings
 design.defaults.experiment_background_colour = misc.constants.C_GREY
@@ -41,15 +42,15 @@ class SelfReport:
 
 
         self.canvas = stimuli.BlankScreen()
-        self.loadEdgedText =  [["Low", "High"], ["Low", "High"], ["Low", "High"], \
-                                           ["Good", "Poor"], ["Low", "High"], ["Low", "High"]]
-        self.loadTitleText = ["Mental Demand", "Physical Demand", \
-                                           "Temporal Demand", "Performance", \
-                                           "Effort", "Frustration"]
-        self.stressEdgesText = [["not at all", "extremely"], \
-                                    ["not at all", "extremely"], ["not at all", "extremely"]]
-        self.stressTitleText = ["how stressful do you feel",\
-                                    "how unpleasant do you feel"]
+        self.loadEdgedText =  [[u"ךומנ", u"הובג"], [u"ךומנ", u"הובג"], [ u"ךומנ",u"הובג" ], \
+                                           [u"הובג",u"ךומנ"], [u"ךומנ",u"הובג"], [u"ךומנ",u"הובג"]]
+        self.loadTitleText = [u" ילטנמ סמוע",u"יזיפ סמוע", \
+                                          u"ןמזמ רזגנה סמוע",u"םיעוציב תמר", \
+                                          u"ץמאמ",u"לוכסת"]
+        self.stressEdgesText = [[u"אל ללכ",u"דואמ"], \
+                                    [u"אל ללכ",u"דואמ"], [u"אל ללכ",u"דואמ"]]
+        self.stressTitleText = [u"שח התא ץוחל המכ",\
+                                   u"שח התא םיענ אל המכ"]
         self.wait_for_miliseconds = 3000
         self.text_array = []
         self.edges_text = []
@@ -77,6 +78,10 @@ class SelfReport:
             self.paint_line(position_y, line_text[0], line_text[1], exp, self.canvas, 0)
             index += 1
         self.canvas.present()
+
+
+
+
         # wait for mouse or touch screen response
 
         self.outlet.push_sample(["start_selfEvaluation_" + type])
@@ -169,55 +174,6 @@ class SelfReport:
             self.old_marks_positions[self.line_index]) > 1:
                 self.update_line(self.line_positions_y[self.line_index], \
                                  self.new_marks_positions[self.line_index])
-    '''
-            if key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1:
-                return self.new_marks_positions
-
-            elif key == misc.constants.K_4 and self.line_index < len(self.new_marks_positions)-1:
-                self.line_index += 1;
-            elif key == misc.constants.K_4:
-                self.line_index = 0;
-            elif key == misc.constants.K_4 and self.line_index == len(self.new_marks_positions)-1:
-                continue;
-
-            if key == misc.constants.K_1:
-                self.lines_updates[self.line_index] = True;
-                while True:
-                    key2, rt2 = self.exp.keyboard.wait(None, 50, True)
-                    if rt2 != None or key2 == misc.constants.K_1:
-                        break
-                    if self.new_marks_positions[self.line_index] <= self.line_start:
-                        break
-                    self.new_marks_positions[self.line_index] -= 5;
-
-                    self.update_line(self.line_positions_y[self.line_index], \
-                                     self.new_marks_positions[self.line_index])
-
-                    if rt2 == None:
-                        rt2 = 50
-                    self.wait_for_miliseconds -= rt2
-                    if self.wait_for_miliseconds < 5:
-                        break
-
-            if key == misc.constants.K_2:
-                self.lines_updates[self.line_index] = True;
-                while True:
-                    key2, rt2 = self.exp.keyboard.wait(None, 50, True)
-                    if rt2 != None or  key2 == misc.constants.K_2:
-                        break
-                    if self.new_marks_positions[self.line_index] >= self.line_end:
-                        break
-                    self.new_marks_positions[self.line_index] += 5;
-
-                    self.update_line(self.line_positions_y[self.line_index], \
-                                     self.new_marks_positions[self.line_index])
-
-                    if rt2 == None:
-                        rt2 = 50
-                    self.wait_for_miliseconds -= rt2
-                    if self.wait_for_miliseconds < 5:
-                        break
-    '''
 
     def check_if_mouse_on_line(self, y_position, mark_position):
         if abs(mark_position[1] - y_position) <= 50 and \
@@ -230,9 +186,9 @@ class SelfReport:
     def write_text(self, text_above, text_edges, y_position, canvas):
         line_start = 0 - (self.line_length / 2)
         line_end = 0 + (self.line_length / 2)
-        text_above = stimuli.TextLine(text_above, [0-10, y_position + 40])
-        text_start = stimuli.TextLine(text_edges[0], [line_start - 30, y_position + 20])
-        text_end = stimuli.TextLine(text_edges[1], [line_end, y_position + 20 ])
+        text_above = stimuli.TextLine(text_above, [0-10, y_position + 40], text_font='Monospace')
+        text_start = stimuli.TextLine(text_edges[0], [line_start - 60, y_position + 20], text_font='Monospace')
+        text_end = stimuli.TextLine(text_edges[1], [line_end + 50, y_position + 20 ], text_font='Monospace')
         text_above.plot(canvas)
         text_start.plot(canvas)
         text_end.plot(canvas)

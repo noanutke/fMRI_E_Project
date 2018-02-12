@@ -16,7 +16,7 @@ import datetime
 screen_height = 600
 screen_width = 800
 
-#runNbackTask(screen_height, screen_width)
-runStroopTask(screen_height, screen_width)
+runNbackTask(screen_height, screen_width)
+#runStroopTask(screen_height, screen_width)
 
 
