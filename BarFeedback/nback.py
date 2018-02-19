@@ -110,7 +110,7 @@ class Nback:
         n=2
         ISI = 2500
         stimuliDuration = 500
-        trials_number = len(self.positions_list) if len(self.positions_list) > 0 else len(self.digit_list)
+        self.trials_number = len(self.positions_list) if len(self.positions_list) > 0 else len(self.digit_list)
 
 
         grid = Grid(len(self.positions_list))
@@ -120,7 +120,7 @@ class Nback:
 
         self.paint_cross(self.exp)
         start_all = time.time()
-        for trial in range(trials_number):
+        for trial in range(self.trials_number):
             start = time.time()
 
             target = None

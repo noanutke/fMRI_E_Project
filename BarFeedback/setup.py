@@ -1,30 +1,43 @@
+#   Created 8-09-2011
+#   Ricky Savjani
+#   (savjani at bcm.edu)
 
-from cx_Freeze import setup, Executable
-import os
-os.environ['TCL_LIBRARY'] = r'C:\Users\NOA\AppData\Local\Programs\Python\Python36-32\tcl\tcl8.6'
-os.environ['TK_LIBRARY'] = r'C:\Users\NOA\AppData\Local\Programs\Python\Python36-32\tcl\tk8.6'
+#import necessary packages
+from distutils.core import setup
+import os, matplotlib
+import py2exe
 
+#the name of your .exe file
+progName = 'main.py'
 
-base = None
+#Initialize Holder Files
+preference_files = []
+app_files = []
+my_data_files=matplotlib.get_py2exe_datafiles()
 
+#define which files you want to copy for data_files
+for files in os.listdir('C:\\Program Files (x86)\\PsychoPy2\\Lib\\site-packages\\psychopy\\preferences\\'):
+    f1 = 'C:\\Program Files (x86)\\PsychoPy2\\Lib\\site-packages\\psychopy\\preferences\\' + files
+    preference_files.append(f1)
 
-executables = [Executable("C:/Users/NOA/fMRI_E_Project/BarFeedback/main.py", base=base)]
+#if you might need to import the app files
+#for files in os.listdir('C:\\Program Files\\PsychoPy2\\Lib\\site-packages\\PsychoPy-1.65.00-py2.6.egg\\psychopy\\app\\'):
+#    f1 = 'C:\\Program Files\\PsychoPy2\\Lib\\site-packages\\PsychoPy-1.65.00-py2.6.egg\\psychopy\\app\\' + files
+#    app_files.append(f1)
 
-includes = ["OpenGL"]
-packages = ["idna", "OpenGL", "numpy"]
-options = {
-    'build_exe': {
+#all_files = [("psychopy\\preferences", preference_files),("psychopy\\app", app_files), my_data_files[0]]
 
-        'packages':packages,
-        'includes': includes
-    },
+#combine the files
+all_files = [("psychopy\\preferences", preference_files), my_data_files[0]]
 
-}
-
+#define the setup
 setup(
-    name = "noaaaaaaaaa",
-    options = options,
-    version = "1.2",
-    description = '<any description>',
-    executables = executables
+                console=[progName],
+                data_files = all_files,
+                options = {
+                    "py2exe":{
+                        "skip_archive": True,
+                        "optimize": 2
+                    }
+                }
 )

@@ -24,9 +24,12 @@ class runNbackTask:
 
 
     def __init__(self, screen_height, screen_width):
+        self.fixationTimes = [6,6,9,9,9,3,3,3]
+        random.shuffle(self.fixationTimes)
         self.baseline_targets = [4,5]
         random.shuffle(self.baseline_targets)
         self.is_baseline = False
+        self.current_block_order_number = ""
         self.blocks_order = []
         self.letters_lists = []
         self.locations_lists = []
@@ -41,25 +44,54 @@ class runNbackTask:
         self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_" + current_hour + "_" + current_min, "load")
         self.screen_height = screen_height
         self.screen_width = screen_width
-        self.condition = self.choose_condition()
 
-        if self.condition != "BlockProtocol_Practice":
-            self.choose_blocks_order()
-            self.init_trials_lists()
-        else:
-            self.blocks_order = ["Sheet1", "Sheet1", "Sheet1"]
 
-        self.run_blocks();
-        self.stress_evaluation_log.close_file()
-        self.cognitive_load_log.close_file()
+        self.start_again = True
+        while self.start_again == True:
+            self.start_again = False
+            self.condition = self.choose_condition()
+            if self.condition != "BlockProtocol_Practice":
+                self.ask_for_order()
+                #self.choose_blocks_order(self.current_block_order_number)
 
-    def init_trials_lists(self):
+                #self.init_trials_lists(True, self.current_block_order_number)
+
+
+                self.init_blocks_order_from_file()
+                self.init_stimuli_from_file()
+
+            else:
+                level = self.ask_for_level()
+                self.blocks_order = [level + "_a"]
+                self.init_trials_lists(False, "")
+
+
+            self.run_blocks();
+            self.stress_evaluation_log.close_file()
+            self.cognitive_load_log.close_file()
+
+
+    def init_blocks_order_from_file(self):
+        # Load spreadsheet
+        xl = pd.read_csv("./orders/order" + self.current_block_order_number + ".csv")
+        #df1 = xl.parse("Sheet1")
+
+        for values in xl:
+            self.blocks_order.insert(len(self.blocks_order), values)
+
+    def init_trials_lists(self, init_from_file, order=""):
         baseline_index = 0
         baseline_target = -1
+
         for i in range(len(self.blocks_order)):
-            if self.blocks_order[i] == 0:
-                baseline_target = self.baseline_targets[baseline_index]
-                baseline_index += 1
+            nLevel = int(self.blocks_order[i].split('_')[0])
+            type = self.blocks_order[i].split('_')[1]
+
+            if nLevel == 0:
+                if type == "a":
+                    baseline_target = 4
+                else:
+                    baseline_target= 5
 
             rand = random.randint(1,2)
             letters_targets_amount = 0
@@ -72,22 +104,52 @@ class runNbackTask:
                 locations_targets_amount = 2
 
             letters_lists, location_target_index = self.generate_trials\
-                (self.blocks_order[i], letters_targets_amount, baseline_target, -1)
+                (nLevel, letters_targets_amount, baseline_target, -1)
             locations_lists, index = self.generate_trials\
-                (self.blocks_order[i], locations_targets_amount, baseline_target, location_target_index)
+                (nLevel, locations_targets_amount, baseline_target, location_target_index)
 
-            self.letters_lists.insert(i, letters_lists)
-            self.locations_lists.insert(i, locations_lists)
+            if init_from_file != True:
+                self.letters_lists.insert(i, letters_lists)
+                self.locations_lists.insert(i, locations_lists)
+            else:
+                type = "a"
+                if i > 3:
+                    type = "b"
+                excel_writer = WriteToExcel("./orders/order" + order + "_" + str(self.blocks_order[i]), None)
+                excel_writer.add_row(letters_lists)
+                excel_writer.add_row(locations_lists)
+                excel_writer.close_file()
 
 
+    def init_stimuli_from_file(self):
 
-    def choose_blocks_order(self):
-        blocks1 = [0,1,2,3]
-        blocks2 = [0,1,2,3]
+        index = 0
+        for block in self.blocks_order:
+
+            # Load spreadsheet
+            xl = pd.read_csv("./orders/order" + self.current_block_order_number + "_" + block + ".csv", header=None)
+            letters = []
+            locations = []
+
+            for value in range(0,12):
+                letters.insert(len(letters), xl[value][0])
+                locations.insert(len(letters), xl[value][1])
+
+            self.letters_lists.insert(index, letters)
+            self.locations_lists.insert(index, locations)
+            index += 1;
+
+
+    def choose_blocks_order(self, order):
+        blocks1 = ["0_a","1_a","2_a","3_a"]
+        blocks2 = ["0_b","1_b","2_b","3_b"]
         random.shuffle(blocks1)
         random.shuffle(blocks2)
         blocks1.extend(blocks2)
         self.blocks_order = blocks1
+        excel_writer = WriteToExcel("./orders/order" + order, None)
+        excel_writer.add_row(blocks1)
+        excel_writer.close_file()
 
 
     def choose_condition(self):
@@ -180,6 +242,100 @@ class runNbackTask:
         dual_target_index = target_indices[random.randint(0, len(target_indices)-1)]
         return (trials, dual_target_index)
 
+    def ask_for_order(self):
+        canvas = stimuli.BlankScreen()
+        order1_ = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
+        Order1 = stimuli.TextLine(text="Order1", position=order1_.position,
+                                 text_colour=misc.constants.C_WHITE)
+        order2_ = stimuli.Rectangle(size=(100, 80), position=(-70, 0))
+        Order2 = stimuli.TextLine(text="Order2", position=order2_.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        order3_ = stimuli.Rectangle(size=(100, 80), position=(60, 0))
+        Order3 = stimuli.TextLine(text="Order3", position=order3_.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        order4_ = stimuli.Rectangle(size=(100, 80), position=(200, 0))
+        Order4 = stimuli.TextLine(text="Order4", position=order4_.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+
+        order1_.plot(canvas)
+        Order1.plot(canvas)
+
+        order2_.plot(canvas)
+        Order2.plot(canvas)
+
+        order3_.plot(canvas)
+        Order3.plot(canvas)
+
+        order4_.plot(canvas)
+        Order4.plot(canvas)
+
+        self.experiment.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            id, pos, _rt = self.experiment.exp.mouse.wait_press()
+
+            if order1_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '1'
+                return
+
+            elif order2_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '2'
+                return
+
+            elif order3_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '3'
+                return
+
+            elif order4_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '4'
+                return
+
+    def ask_for_level(self):
+        canvas = stimuli.BlankScreen()
+        level1 = stimuli.Rectangle(size=(100, 80), position=(200, 0))
+        text_level1 = stimuli.TextLine(text="1 back", position=level1.position,
+                                 text_colour=misc.constants.C_WHITE)
+        level2 = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
+        text_level2 = stimuli.TextLine(text="2 back", position=level2.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        level3 = stimuli.Rectangle(size=(100, 80), position=(0, 0))
+        text_level3 = stimuli.TextLine(text="3 back", position=level3.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+
+        level1.plot(canvas)
+        text_level1.plot(canvas)
+
+        level2.plot(canvas)
+        text_level2.plot(canvas)
+
+        level3.plot(canvas)
+        text_level3.plot(canvas)
+
+        self.experiment.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            id, pos, _rt = self.experiment.exp.mouse.wait_press()
+
+            if level1.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "1"
+            elif level2.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "2"
+            elif level3.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "3"
 
 
     def ask_for_condition(self):
@@ -188,11 +344,7 @@ class runNbackTask:
         text_Practice = stimuli.TextLine(text="Practice", position=Practice.position,
                                  text_colour=misc.constants.C_WHITE)
         Basic = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
-        text_Basic = stimuli.TextLine(text="Basic", position=Basic.position,
-                                 text_colour=misc.constants.C_WHITE)
-
-        Manipulation = stimuli.Rectangle(size=(100, 80), position=(0, 0))
-        text_Manipulation = stimuli.TextLine(text="Manipulation", position=Manipulation.position,
+        text_Basic = stimuli.TextLine(text="Test", position=Basic.position,
                                  text_colour=misc.constants.C_WHITE)
 
 
@@ -201,9 +353,6 @@ class runNbackTask:
 
         Basic.plot(canvas)
         text_Basic.plot(canvas)
-
-        Manipulation.plot(canvas)
-        text_Manipulation.plot(canvas)
 
         self.experiment.exp.mouse.show_cursor()
         canvas.present()
@@ -219,16 +368,14 @@ class runNbackTask:
                 self.experiment.exp.mouse.hide_cursor()
                 self.use_develop_mode = False
                 return 'noStress'
-            elif Manipulation.overlapping_with_position(pos):
-                self.experiment.exp.mouse.hide_cursor()
-                return 'stress'
 
     def run_blocks(self):
         evaluate_stress_first_time = False
         practice_block = 0
         block_index = 0
         for block in self.blocks_order:
-            n = block
+            n = int(block.split('_')[0])
+            type = block.split('_')[1]
             self.is_baseline = False
             if n == 0:
                 self.is_baseline = True
@@ -241,6 +388,7 @@ class runNbackTask:
 
             block_type = ""
             if self.condition == "BlockProtocol_Practice":
+                self.start_again = True
                 n = 1
                 block_type = 'p'
                 if practice_block == 0:
@@ -258,29 +406,34 @@ class runNbackTask:
                     evaluate_stress_first_time = True
 
                 if self.is_baseline == True: #baseline
-                    rest = RestBlock(self.outlet, str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
+                    rest = RestBlock(self.outlet, self.fixationTimes[block_index],\
+                                     str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
                                      "", "./pictures/"+\
                                      self.instructions_folder + "/Slide" + str(n) + "_baseline.png")
                 else:
-                    rest = RestBlock(self.outlet, str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
+                    rest = RestBlock(self.outlet, self.fixationTimes[block_index],\
+                                     str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
                                      self.instructions_folder)
 
                 port = parallel.ParallelPort(address='0xE010')
-                port.setData(1)
+                port.setData(int(1))
                 n_back = self.experiment.run(n, self.letters_lists[block_index], self.locations_lists[block_index],\
                                              block_type, stimuli_type, block, self.condition, self.is_baseline)
-                port.setData(2)
-                block_index += 1
+                port.setData(int(2))
+
                 if block_type == 'p':
                     key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key])
                     if key is self.continue_key:
+                        block_index += 1
                         stay_on_block = False
                     else:
                         stay_on_block = True
                 else:
+                    block_index += 1
                     stay_on_block = False
-                    self.evaluate_stress(str(block) + "_" + self.condition)
-                    self.evaluate_load(str(block) + "_" + self.condition)
+                    if block_index == 4 or block_index == 8:
+                        self.evaluate_stress(str(block) + "_" + self.condition)
+                        self.evaluate_load(str(block) + "_" + self.condition)
 
 
 

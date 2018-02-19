@@ -7,8 +7,9 @@ class RestBlock:
     show_instructions_for_seconds = 1
     show_cross_for_seconds = 1
 
-    def __init__(self, lsl_stream, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
+    def __init__(self, lsl_stream, fixationTime, next_block="", block_type="", stimuli_type="", exp=None, use_pilot_mode=False,\
                  folder="", file = ""):
+        self.show_cross_for_seconds = fixationTime;
         self.use_pilot_mode = use_pilot_mode
         self.next_block = next_block
         self.canvas = stimuli.BlankScreen()

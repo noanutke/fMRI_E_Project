@@ -20,7 +20,11 @@ class WriteToExcel:
             titles_row = self.stressHeaders
         else:
             titles_row = self.loadHeaders
-        self.writer.writerow(titles_row)
+
+        if type == None:
+            return
+        else:
+            self.writer.writerow(titles_row)
 
 
     def add_row(self, row):

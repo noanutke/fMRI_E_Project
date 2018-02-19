@@ -27,8 +27,29 @@ class runStroopTask:
     continue_key = misc.constants.K_SPACE
     repeat_block_key = misc.constants.K_0
 
+    def init_stimuli_from_file(self):
+
+        index = 0
+        for block in self.blocks_order:
+
+            # Load spreadsheet
+            xl = pd.read_csv("./ordersStroop/order" + self.current_block_order_number + "_" + block + ".csv", header=None)
+            directions = []
+            locations = []
+
+            for value in range(0,16):
+                directions.insert(len(directions), xl[value][0])
+                locations.insert(len(directions), xl[value][1])
+
+            self.trials_directions_array.insert(index, directions)
+            self.trials_locations_array.insert(index, locations)
+            index += 1;
 
     def __init__(self, screen_height, screen_width):
+        self.fixationTimes = [6,6,3,9]
+        random.shuffle(self.fixationTimes)
+
+        self.current_block_order_number = "";
         self.blocks_order = []
         self.trials_locations_array = []
         self.trials_directions_array = []
@@ -45,25 +66,96 @@ class runStroopTask:
         self.screen_height = screen_height
         self.screen_width = screen_width
 
-        self.condition = self.choose_condition()
-        if self.condition != "Practice":
-            self.choose_blocks_order()
-            self.init_trials_orders()
-        else:
-            self.blocks_order = ["incong", "cong"]
-            self.init_trials_orders()
+        self.start_again = True
+        while self.start_again == True:
+            self.start_again = False
+            self.condition = self.choose_condition()
+            if self.condition != "Practice":
+                self.ask_for_order()
 
-        self.run_blocks();
-        self.stress_evaluation_log.close_file()
-        self.cognitive_load_log.close_file()
+                #self.choose_blocks_order(self.current_block_order_number)
+                #self.init_trials_orders(True, self.current_block_order_number)
 
-    def init_trials_orders(self):
+                self.init_blocks_order_from_file()
+                self.init_stimuli_from_file()
+            else:
+                self.blocks_order = ["incong", "cong"]
+                self.init_trials_orders(False, "")
+
+            self.run_blocks();
+            self.stress_evaluation_log.close_file()
+            self.cognitive_load_log.close_file()
+
+    def init_blocks_order_from_file(self):
+        # Load spreadsheet
+        xl = pd.read_csv("./ordersStroop/order" + self.current_block_order_number + ".csv")
+        #df1 = xl.parse("Sheet1")
+
+        for values in xl:
+            self.blocks_order.insert(len(self.blocks_order), values)
+
+    def ask_for_order(self):
+        canvas = stimuli.BlankScreen()
+        order1_ = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
+        Order1 = stimuli.TextLine(text="Order1", position=order1_.position,
+                                  text_colour=misc.constants.C_WHITE)
+        order2_ = stimuli.Rectangle(size=(100, 80), position=(-70, 0))
+        Order2 = stimuli.TextLine(text="Order2", position=order2_.position,
+                                  text_colour=misc.constants.C_WHITE)
+
+        order3_ = stimuli.Rectangle(size=(100, 80), position=(60, 0))
+        Order3 = stimuli.TextLine(text="Order3", position=order3_.position,
+                                  text_colour=misc.constants.C_WHITE)
+
+        order4_ = stimuli.Rectangle(size=(100, 80), position=(200, 0))
+        Order4 = stimuli.TextLine(text="Order4", position=order4_.position,
+                                  text_colour=misc.constants.C_WHITE)
+
+        order1_.plot(canvas)
+        Order1.plot(canvas)
+
+        order2_.plot(canvas)
+        Order2.plot(canvas)
+
+        order3_.plot(canvas)
+        Order3.plot(canvas)
+
+        order4_.plot(canvas)
+        Order4.plot(canvas)
+
+        self.experiment.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            id, pos, _rt = self.experiment.exp.mouse.wait_press()
+
+            if order1_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '1'
+                return
+
+            elif order2_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '2'
+                return
+
+            elif order3_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '3'
+                return
+
+            elif order4_.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.current_block_order_number = '4'
+                return
+
+    def init_trials_orders(self, init_from_file, order):
         index = 0
         for block in self.blocks_order:
-            self.init_stimuli(block, index)
+            self.init_stimuli(block, index, init_from_file, order)
             index += 1
 
-    def init_stimuli(self, block, index):
+    def init_stimuli(self, block, index, init_from_file, order):
         locations = []
         directions = []
         minority_locations = numpy.random.choice(16, 4)
@@ -108,9 +200,17 @@ class runStroopTask:
         self.trials_directions_array.insert(index, directions)
         self.trials_locations_array.insert(index, locations)
 
+        if init_from_file != True:
+            self.trials_locations_array.insert(index, locations)
+        else:
+            excel_writer = WriteToExcel("./ordersStroop/order" + order + "_" + str(self.blocks_order[index]), None)
+            excel_writer.add_row(directions)
+            excel_writer.add_row(locations)
+            excel_writer.close_file()
 
-    def choose_blocks_order(self):
-        blocks_order = ['cong','cong', 'incong', 'incong' ]
+
+    def choose_blocks_order(self, order):
+        blocks_order = ['cong_a','cong_b', 'incong_a', 'incong_b' ]
         order_ok = False
         while order_ok == False:
             order_ok = True
@@ -128,6 +228,9 @@ class runStroopTask:
                 index += 1
 
         self.blocks_order = blocks_order
+        excel_writer = WriteToExcel("./ordersStroop/order" + order, None)
+        excel_writer.add_row(blocks_order)
+        excel_writer.close_file()
 
 
     def choose_condition(self):
@@ -171,25 +274,32 @@ class runStroopTask:
         for block in self.blocks_order:
             stay_on_block = True
 
+            evaluate_stress_first_time = False
             while stay_on_block:
+                if self.condition != 'Practice' and evaluate_stress_first_time == False:
+                    self.evaluate_stress(str(block))
+                    evaluate_stress_first_time = True
 
-                rest = RestBlock(self.outlet, exp = self.experiment.exp, use_pilot_mode = self.use_pilot_mode, \
+                rest = RestBlock(self.outlet, self.fixationTimes[block_index],
+                                 exp = self.experiment.exp, use_pilot_mode = self.use_pilot_mode, \
                                  folder = self.instructions_folder, file = self.instructions_file)
 
                 port = parallel.ParallelPort(address='0xE010')
-                port.setData(1)
+                port.setData(int(1))
                 stroop = self.experiment.run(block, self.condition, self.trials_locations_array[block_index], \
                                             self.trials_directions_array[block_index])
-                port.setData(2)
+                port.setData(int(2))
                 if self.condition == 'Practice':
+                    self.start_again = True
                     key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key])
                     if key is self.continue_key:
                         stay_on_block = False
                     else:
                         stay_on_block = True
                 else:
-                    self.evaluate_stress(str(block[0]) + block[1])
-                    self.evaluate_load(str(block[0]) + block[1])
+                    if block_index == 1 or block_index == 3:
+                        self.evaluate_stress(str(block[0]) + block[1])
+                        self.evaluate_load(str(block[0]) + block[1])
                     stay_on_block = False
             block_index += 1
 
