@@ -14,7 +14,7 @@ from psychopy import parallel
 class runNbackTask:
     instructions_folder = "instructions_pilot_mode_new"
     use_pilot_mode = True
-    use_develop_mode = True
+
     flight_simulator_mode = True
 
 
@@ -23,7 +23,9 @@ class runNbackTask:
     repeat_block_key = misc.constants.K_0
 
 
-    def __init__(self, screen_height, screen_width):
+    def __init__(self, screen_height, screen_width, exp, use_develop_mode):
+        self.use_develop_mode = use_develop_mode
+        self.exp = exp
         self.fixationTimes = [6,6,9,9,9,3,3,3]
         random.shuffle(self.fixationTimes)
         self.baseline_targets = [4,5]
@@ -36,7 +38,7 @@ class runNbackTask:
         info = StreamInfo('MyMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
         self.outlet = StreamOutlet(info)
         self.start_time = datetime.datetime.now()
-        self.experiment = Nback(self.use_develop_mode, self.start_time, screen_height, screen_width, True, False, \
+        self.experiment = Nback(self.exp, self.start_time, screen_height, screen_width, True, False, \
                                 self.outlet)
         current_hour = str(datetime.datetime.now().hour)
         current_min = str(datetime.datetime.now().minute)

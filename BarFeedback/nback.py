@@ -20,7 +20,7 @@ class Nback:
     n=0
 
 
-    def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, use_bar, outlet):
+    def __init__(self, exp, start_time, screen_height, screen_width, start_fast, use_bar, outlet):
         self.trials_duration = []
         self.trials_duration_with_saving = []
         self.show_cross_for_seconds = 1;
@@ -31,12 +31,7 @@ class Nback:
         self.start_time = start_time
 
         self.stress_condition = ""
-        self.use_develop_mode = develop_mode
-        design.defaults.experiment_background_colour = misc.constants.C_GREY
-        design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
-        control.set_develop_mode(develop_mode)
-        self.exp = control.initialize()
-        control.start(self.exp, auto_create_subject_id=start_fast, skip_ready_screen=start_fast)
+        self.exp = exp
         self.digit = None
         self.position = None
         self.is_practice = False

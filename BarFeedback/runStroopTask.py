@@ -45,7 +45,9 @@ class runStroopTask:
             self.trials_locations_array.insert(index, locations)
             index += 1;
 
-    def __init__(self, screen_height, screen_width):
+    def __init__(self, screen_height, screen_width, exp, use_develop_mode):
+        self.use_develop_mode = use_develop_mode
+        self.exp = exp
         self.fixationTimes = [6,6,3,9]
         random.shuffle(self.fixationTimes)
 
@@ -57,7 +59,7 @@ class runStroopTask:
         info = StreamInfo('MyMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
         self.outlet = StreamOutlet(info)
         self.start_time = datetime.datetime.now()
-        self.experiment = stroop(self.use_develop_mode, self.start_time, screen_height, screen_width, True,
+        self.experiment = stroop(self.exp, self.start_time, screen_height, screen_width, True,
                                  self.outlet)
         current_hour = str(datetime.datetime.now().hour)
         current_min = str(datetime.datetime.now().minute)

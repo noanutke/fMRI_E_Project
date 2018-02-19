@@ -20,20 +20,15 @@ class stroop:
     down_key = 1
 
 
-    def __init__(self, develop_mode, start_time, screen_height, screen_width, start_fast, lsl_stream):
+    def __init__(self, exp, start_time, screen_height, screen_width, start_fast, lsl_stream):
         self.screen_height = screen_height
         self.screen_width = screen_width
         self.start_time = start_time
         self.outlet = lsl_stream
         self.correct_trials = 0
+        self.exp = exp
 
 
-        self.use_develop_mode = develop_mode
-        design.defaults.experiment_background_colour = misc.constants.C_GREY
-        design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
-        control.set_develop_mode(develop_mode)
-        self.exp = control.initialize()
-        control.start(self.exp, auto_create_subject_id=start_fast, skip_ready_screen=start_fast)
         self.game_controller = io.GamePad(0, True, True)
         self.words = []
         self.colors = []
