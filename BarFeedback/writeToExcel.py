@@ -9,8 +9,8 @@ class WriteToExcel:
 
 
     def __init__(self, file_name, type):
-        self.stressHeaders = ["block_type", "Stressful", "Unpleasant"]
-        self.loadHeaders = ["block_type", "Mental Demand", "Physical Demand", "Temporal Demand", "Performance",\
+        self.stressHeaders = ["task", "subNumber", "time","order", "Stressful", "Unpleasant"]
+        self.loadHeaders = ["task", "subNumber", "time","order", "Mental Demand", "Physical Demand", "Temporal Demand", "Performance",\
                        "Effort", "Frustration"]
         self.file_name = file_name + ".csv"
         self.file = open(self.file_name, 'w')

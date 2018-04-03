@@ -11,6 +11,7 @@ from pylsl import StreamInfo, StreamOutlet
 import pandas as pd
 import numpy
 from psychopy import parallel
+import time
 
 class runStroopTask:
     use_pilot_mode = True
@@ -26,6 +27,7 @@ class runStroopTask:
 
     continue_key = misc.constants.K_SPACE
     repeat_block_key = misc.constants.K_0
+    exit_key = misc.constants.K_BACKSPACE
 
     def init_stimuli_from_file(self):
 
@@ -45,7 +47,8 @@ class runStroopTask:
             self.trials_locations_array.insert(index, locations)
             index += 1;
 
-    def __init__(self, screen_height, screen_width, exp, use_develop_mode):
+    def __init__(self, screen_height, screen_width, exp, use_develop_mode, subNumber, outlet):
+        self.subNumber = subNumber
         self.use_develop_mode = use_develop_mode
         self.exp = exp
         self.fixationTimes = [6,6,3,9]
@@ -56,23 +59,27 @@ class runStroopTask:
         self.trials_locations_array = []
         self.trials_directions_array = []
         shuffle(self.allBlocks)
-        info = StreamInfo('MyMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
-        self.outlet = StreamOutlet(info)
+        self.outlet = outlet
         self.start_time = datetime.datetime.now()
         self.experiment = stroop(self.exp, self.start_time, screen_height, screen_width, True,
-                                 self.outlet)
+                                 self.outlet, self.subNumber)
         current_hour = str(datetime.datetime.now().hour)
         current_min = str(datetime.datetime.now().minute)
-        self.stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" + current_min, "stress")
-        self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_" + current_hour + "_" + current_min, "load")
+        self.stress_evaluation_log = WriteToExcel("stress_evaluation_stroop" + self.subNumber + "_" + current_hour + "_" + current_min, "stress")
+        self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_stroop" + self.subNumber + "_" + current_hour + "_" + current_min, "load")
         self.screen_height = screen_height
         self.screen_width = screen_width
 
         self.start_again = True
+        self.outlet.push_sample(["sp_s"])
+
+    def start_run(self):
         while self.start_again == True:
             self.start_again = False
             self.condition = self.choose_condition()
-            if self.condition != "Practice":
+            if self.condition == "exit":
+                break
+            if self.condition != "practice":
                 self.ask_for_order()
 
                 #self.choose_blocks_order(self.current_block_order_number)
@@ -81,18 +88,19 @@ class runStroopTask:
                 self.init_blocks_order_from_file()
                 self.init_stimuli_from_file()
             else:
-                self.blocks_order = ["incong", "cong"]
-                self.init_trials_orders(False, "")
+                self.blocks_order = ["incong"]
+                self.init_trials_orders(False, "", True)
 
-            self.run_blocks();
-            self.stress_evaluation_log.close_file()
-            self.cognitive_load_log.close_file()
+            start_new_exp = self.run_blocks();
+        self.stress_evaluation_log.close_file()
+        self.cognitive_load_log.close_file()
+        return start_new_exp
 
     def init_blocks_order_from_file(self):
         # Load spreadsheet
         xl = pd.read_csv("./ordersStroop/order" + self.current_block_order_number + ".csv")
         #df1 = xl.parse("Sheet1")
-
+        self.blocks_order = []
         for values in xl:
             self.blocks_order.insert(len(self.blocks_order), values)
 
@@ -151,16 +159,19 @@ class runStroopTask:
                 self.current_block_order_number = '4'
                 return
 
-    def init_trials_orders(self, init_from_file, order):
+    def init_trials_orders(self, init_from_file, order, isPractice = False):
         index = 0
         for block in self.blocks_order:
-            self.init_stimuli(block, index, init_from_file, order)
+            self.init_stimuli(block, index, init_from_file, order, isPractice)
             index += 1
 
-    def init_stimuli(self, block, index, init_from_file, order):
+    def init_stimuli(self, block, index, init_from_file, order, isPractice):
         locations = []
         directions = []
-        minority_locations = numpy.random.choice(16, 4)
+        minorit_amount = 4;
+        if (isPractice == True):
+            minorit_amount = 8
+        minority_locations = numpy.random.choice(16, minorit_amount)
         locations_options = ["up", "down"]
         last_index = -1
         same_index_in_row = 0
@@ -184,7 +195,7 @@ class runStroopTask:
         index_in_minority_locations = 0
         index_in_locations = 0
         for location in locations:
-            if index_in_minority_locations < 4 and \
+            if index_in_minority_locations < minorit_amount and \
                             index_in_locations == minority_locations[index_in_minority_locations]:
                 if block == "incong":
                     directions.insert(index_in_locations, directions_options_congruent[location])
@@ -238,9 +249,11 @@ class runStroopTask:
     def choose_condition(self):
         condition = self.ask_for_condition()
         if condition == "practice":
-            return "Practice"
+            return "practice"
+        elif condition == "test":
+            return "BlockProtocol_NoStress"
         else:
-            return "Task"
+            return "exit"
 
     def ask_for_condition(self):
         canvas = stimuli.BlankScreen()
@@ -250,11 +263,19 @@ class runStroopTask:
         Test = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
         text_Test = stimuli.TextLine(text="Test", position=Test.position,
                                  text_colour=misc.constants.C_WHITE)
+
+        exit = stimuli.Rectangle(size=(100, 80), position=(0, -200))
+        text_exit = stimuli.TextLine(text="Exit", position=exit.position,
+                                 text_colour=misc.constants.C_WHITE)
+
         Practice.plot(canvas)
         text_Practice.plot(canvas)
 
         Test.plot(canvas)
         text_Test.plot(canvas)
+
+        exit.plot(canvas)
+        text_exit.plot(canvas)
 
         self.experiment.exp.mouse.show_cursor()
         canvas.present()
@@ -270,30 +291,46 @@ class runStroopTask:
                 self.experiment.exp.mouse.hide_cursor()
                 self.use_develop_mode = False
                 return 'test'
+            elif exit.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
+                return 'exit'
 
     def run_blocks(self):
         block_index = 0
+        evaluate_stress_first_time = False
         for block in self.blocks_order:
             stay_on_block = True
 
-            evaluate_stress_first_time = False
+            start_block_time = time.time()
             while stay_on_block:
-                if self.condition != 'Practice' and evaluate_stress_first_time == False:
+
+                if self.condition != 'practice' and evaluate_stress_first_time == False:
                     self.evaluate_stress(str(block))
                     evaluate_stress_first_time = True
 
-                rest = RestBlock(self.outlet, self.fixationTimes[block_index],
+                rest = RestBlock("stroop", self.outlet, self.fixationTimes[block_index], block_type= 'p' if \
+                    self.condition == 'practice' else "",
                                  exp = self.experiment.exp, use_pilot_mode = self.use_pilot_mode, \
                                  folder = self.instructions_folder, file = self.instructions_file)
+                cont = rest.start_rest();
 
+                if cont == False:
+                    return False
                 port = parallel.ParallelPort(address='0xE010')
-                port.setData(int(1))
+                port.setData(int(20 + block_index + 1))
+
                 stroop = self.experiment.run(block, self.condition, self.trials_locations_array[block_index], \
-                                            self.trials_directions_array[block_index])
-                port.setData(int(2))
-                if self.condition == 'Practice':
+                                            self.trials_directions_array[block_index],
+                                             self.current_block_order_number,port, block_index)
+                port.setData(int(200))
+                if self.condition == 'practice':
                     self.start_again = True
-                    key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key])
+                    key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key, \
+                                                                 self.exit_key])
+
+                    if key is self.exit_key:
+                        return False
                     if key is self.continue_key:
                         stay_on_block = False
                     else:
@@ -303,12 +340,17 @@ class runStroopTask:
                         self.evaluate_stress(str(block[0]) + block[1])
                         self.evaluate_load(str(block[0]) + block[1])
                     stay_on_block = False
+
+
             block_index += 1
+        return True
 
     def evaluate_stress(self, block):
-        SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
-                   "stress", self.stress_evaluation_log, block, self.outlet)
+        return SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
+                   "stress", self.stress_evaluation_log, block, self.outlet, self.subNumber,\
+                   self.current_block_order_number, "stroop")
 
     def evaluate_load(self, block):
-        SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
-                   "load", self.cognitive_load_log, block, self.outlet)
+        return SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
+                   "load", self.cognitive_load_log, block, self.outlet, self.subNumber,\
+                   self.current_block_order_number, "stroop")

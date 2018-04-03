@@ -21,9 +21,15 @@ class runNbackTask:
 
     continue_key = misc.constants.K_SPACE
     repeat_block_key = misc.constants.K_0
+    exit_key = misc.constants.K_BACKSPACE
 
 
-    def __init__(self, screen_height, screen_width, exp, use_develop_mode):
+    def __init__(self, screen_height, screen_width, exp, use_develop_mode, subNumber, outlet):
+        self.outlet = outlet;
+        self.practice_n_level = ""
+        self.practice_type = ""
+        self.practice_type = ""
+        self.subNumber = subNumber
         self.use_develop_mode = use_develop_mode
         self.exp = exp
         self.fixationTimes = [6,6,9,9,9,3,3,3]
@@ -33,25 +39,28 @@ class runNbackTask:
         self.is_baseline = False
         self.current_block_order_number = ""
         self.blocks_order = []
-        self.letters_lists = []
-        self.locations_lists = []
-        info = StreamInfo('MyMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
-        self.outlet = StreamOutlet(info)
+        self.letters_lists = [""]
+        self.locations_lists = [""]
+
         self.start_time = datetime.datetime.now()
         self.experiment = Nback(self.exp, self.start_time, screen_height, screen_width, True, False, \
-                                self.outlet)
+                                self.outlet, self.subNumber)
         current_hour = str(datetime.datetime.now().hour)
         current_min = str(datetime.datetime.now().minute)
-        self.stress_evaluation_log = WriteToExcel("stress_evaluation_" + current_hour + "_" + current_min, "stress")
-        self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_" + current_hour + "_" + current_min, "load")
+        self.stress_evaluation_log = WriteToExcel("stress_evaluation_nback" + self.subNumber + "_" + current_hour + "_" + current_min, "stress")
+        self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_nback"+ self.subNumber + "_" + current_hour + "_" + current_min, "load")
         self.screen_height = screen_height
         self.screen_width = screen_width
 
-
+        self.outlet.push_sample(["nk_s"])
         self.start_again = True
+
+    def start_run(self):
         while self.start_again == True:
             self.start_again = False
             self.condition = self.choose_condition()
+            if self.condition == "exit":
+                break
             if self.condition != "BlockProtocol_Practice":
                 self.ask_for_order()
                 #self.choose_blocks_order(self.current_block_order_number)
@@ -63,21 +72,22 @@ class runNbackTask:
                 self.init_stimuli_from_file()
 
             else:
-                level = self.ask_for_level()
-                self.blocks_order = [level + "_a"]
+                self. practice_n_level= self.ask_for_level()
+                self.practice_type = self.ask_for_practice_type()
+                self.blocks_order = [self. practice_n_level + "_a"]
                 self.init_trials_lists(False, "")
 
-
-            self.run_blocks();
-            self.stress_evaluation_log.close_file()
-            self.cognitive_load_log.close_file()
+            start_new_exp = self.run_blocks();
+        self.stress_evaluation_log.close_file()
+        self.cognitive_load_log.close_file()
+        return start_new_exp
 
 
     def init_blocks_order_from_file(self):
         # Load spreadsheet
         xl = pd.read_csv("./orders/order" + self.current_block_order_number + ".csv")
         #df1 = xl.parse("Sheet1")
-
+        self.blocks_order = []
         for values in xl:
             self.blocks_order.insert(len(self.blocks_order), values)
 
@@ -98,21 +108,32 @@ class runNbackTask:
             rand = random.randint(1,2)
             letters_targets_amount = 0
             locations_targets_amount = 0
-            if rand == 1:
-                letters_targets_amount = 2
-                locations_targets_amount = 3
+            if self.practice_type == "a":
+                letters_targets_amount = 4
+            elif self.practice_type == "v":
+                locations_targets_amount = 4
             else:
-                letters_targets_amount = 3
-                locations_targets_amount = 2
+                if rand == 1:
+                    letters_targets_amount = 2
+                    locations_targets_amount = 3
+                else:
+                    letters_targets_amount = 3
+                    locations_targets_amount = 2
 
-            letters_lists, location_target_index = self.generate_trials\
-                (nLevel, letters_targets_amount, baseline_target, -1)
-            locations_lists, index = self.generate_trials\
-                (nLevel, locations_targets_amount, baseline_target, location_target_index)
+            location_target_index = -1
+            if self.practice_type != "v":
+                letters_lists, location_target_index = self.generate_trials\
+                    (nLevel, letters_targets_amount, baseline_target, -1)
+            if self.practice_type != "a":
+
+                locations_lists, index = self.generate_trials\
+                    (nLevel, locations_targets_amount, baseline_target, location_target_index)
 
             if init_from_file != True:
-                self.letters_lists.insert(i, letters_lists)
-                self.locations_lists.insert(i, locations_lists)
+                if self.practice_type != "v":
+                    self.letters_lists.insert(i, letters_lists)
+                if self.practice_type != "a":
+                    self.locations_lists.insert(i, locations_lists)
             else:
                 type = "a"
                 if i > 3:
@@ -156,12 +177,13 @@ class runNbackTask:
 
     def choose_condition(self):
         condition = self.ask_for_condition()
+
         if condition == "practice":
             return "BlockProtocol_Practice"
-        elif condition == "stress":
-            return "BlockProtocol_Stress"
-        else:
+        elif condition == "noStress":
             return "BlockProtocol_NoStress"
+        else:
+            return "exit"
 
     def check_if_target_demands_ok(self, indices):
         target_in_row = 1
@@ -241,7 +263,9 @@ class runNbackTask:
                 if self.check_if_trials_order_ok(trials):
                     trials_order_ok = True
 
-        dual_target_index = target_indices[random.randint(0, len(target_indices)-1)]
+        dual_target_index = -1
+        if self.practice_type == "both":
+            dual_target_index = target_indices[random.randint(0, len(target_indices)-1)]
         return (trials, dual_target_index)
 
     def ask_for_order(self):
@@ -305,11 +329,11 @@ class runNbackTask:
         level1 = stimuli.Rectangle(size=(100, 80), position=(200, 0))
         text_level1 = stimuli.TextLine(text="1 back", position=level1.position,
                                  text_colour=misc.constants.C_WHITE)
-        level2 = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
+        level2 = stimuli.Rectangle(size=(100, 80), position=(0, 0))
         text_level2 = stimuli.TextLine(text="2 back", position=level2.position,
                                  text_colour=misc.constants.C_WHITE)
 
-        level3 = stimuli.Rectangle(size=(100, 80), position=(0, 0))
+        level3 = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
         text_level3 = stimuli.TextLine(text="3 back", position=level3.position,
                                  text_colour=misc.constants.C_WHITE)
 
@@ -340,6 +364,45 @@ class runNbackTask:
                 return "3"
 
 
+    def ask_for_practice_type(self):
+        canvas = stimuli.BlankScreen()
+        auditory = stimuli.Rectangle(size=(100, 80), position=(200, 0))
+        text_auditory = stimuli.TextLine(text="auditory", position=auditory.position,
+                                 text_colour=misc.constants.C_WHITE)
+        spatial = stimuli.Rectangle(size=(100, 80), position=(-200, 0))
+        text_spatial = stimuli.TextLine(text="spatial", position=spatial.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+        both = stimuli.Rectangle(size=(100, 80), position=(0, 0))
+        text_both = stimuli.TextLine(text="both", position=both.position,
+                                 text_colour=misc.constants.C_WHITE)
+
+
+        auditory.plot(canvas)
+        text_auditory.plot(canvas)
+
+        spatial.plot(canvas)
+        text_spatial.plot(canvas)
+
+        both.plot(canvas)
+        text_both.plot(canvas)
+
+        self.experiment.exp.mouse.show_cursor()
+        canvas.present()
+
+        while True:
+            id, pos, _rt = self.experiment.exp.mouse.wait_press()
+
+            if auditory.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "a"
+            elif spatial.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "v"
+            elif both.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                return "both"
+
     def ask_for_condition(self):
         canvas = stimuli.BlankScreen()
         Practice = stimuli.Rectangle(size=(100, 80), position=(200, 0))
@@ -349,12 +412,19 @@ class runNbackTask:
         text_Basic = stimuli.TextLine(text="Test", position=Basic.position,
                                  text_colour=misc.constants.C_WHITE)
 
+        exit = stimuli.Rectangle(size=(100, 80), position=(0, -200))
+        text_exit = stimuli.TextLine(text="Exit", position=exit.position,
+                                 text_colour=misc.constants.C_WHITE)
+
 
         Practice.plot(canvas)
         text_Practice.plot(canvas)
 
         Basic.plot(canvas)
         text_Basic.plot(canvas)
+
+        exit.plot(canvas)
+        text_exit.plot(canvas)
 
         self.experiment.exp.mouse.show_cursor()
         canvas.present()
@@ -370,6 +440,10 @@ class runNbackTask:
                 self.experiment.exp.mouse.hide_cursor()
                 self.use_develop_mode = False
                 return 'noStress'
+            elif Basic.overlapping_with_position(pos):
+                self.experiment.exp.mouse.hide_cursor()
+                self.use_develop_mode = False
+                return 'exit'
 
     def run_blocks(self):
         evaluate_stress_first_time = False
@@ -391,40 +465,44 @@ class runNbackTask:
             block_type = ""
             if self.condition == "BlockProtocol_Practice":
                 self.start_again = True
-                n = 1
+                n = self.practice_n_level
+                stimuli_type = self.practice_type
                 block_type = 'p'
-                if practice_block == 0:
-                    stimuli_type = 'v'
-                elif practice_block == 1:
-                    stimuli_type = 'a'
-                else:
-                    stimuli_type = 'both'
-                practice_block += 1
 
             while stay_on_block:
 
-                if block_type != 'p' and evaluate_stress_first_time == False:
+                if self.condition != "BlockProtocol_Practice" and evaluate_stress_first_time == False:
                     self.evaluate_stress(str(block))
                     evaluate_stress_first_time = True
 
                 if self.is_baseline == True: #baseline
-                    rest = RestBlock(self.outlet, self.fixationTimes[block_index],\
+                    rest = RestBlock("nBack", self.outlet, self.fixationTimes[block_index],\
                                      str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
                                      "", "./pictures/"+\
                                      self.instructions_folder + "/Slide" + str(n) + "_baseline.png")
                 else:
-                    rest = RestBlock(self.outlet, self.fixationTimes[block_index],\
+                    rest = RestBlock("nBack", self.outlet, self.fixationTimes[block_index],\
                                      str(n), block_type, stimuli_type, self.experiment.exp, self.use_pilot_mode, \
                                      self.instructions_folder)
+                cont = rest.start_rest();
+                if cont == False:
+                    return False;
 
                 port = parallel.ParallelPort(address='0xE010')
-                port.setData(int(1))
-                n_back = self.experiment.run(n, self.letters_lists[block_index], self.locations_lists[block_index],\
-                                             block_type, stimuli_type, block, self.condition, self.is_baseline)
-                port.setData(int(2))
+                port.setData(int(10 + block_index + 1))
+
+                self.experiment.run(port, n,self.letters_lists[block_index], self.locations_lists[block_index],\
+                                             block_type, stimuli_type, block, self.condition, self.is_baseline, \
+                                             self.current_block_order_number,block_index)
+
+                port.setData(int(100))
 
                 if block_type == 'p':
-                    key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key])
+                    key, rt = self.experiment.exp.keyboard.wait([self.continue_key, self.repeat_block_key,\
+                                                                 self.exit_key])
+
+                    if key is self.exit_key:
+                        return False;
                     if key is self.continue_key:
                         block_index += 1
                         stay_on_block = False
@@ -436,13 +514,16 @@ class runNbackTask:
                     if block_index == 4 or block_index == 8:
                         self.evaluate_stress(str(block) + "_" + self.condition)
                         self.evaluate_load(str(block) + "_" + self.condition)
+        return True
 
 
 
     def evaluate_stress(self, block):
         SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
-                   "stress", self.stress_evaluation_log, block, self.outlet)
+                   "stress", self.stress_evaluation_log, block, self.outlet, self.subNumber, \
+                   self.current_block_order_number, "nBack")
 
     def evaluate_load(self, block):
         SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
-                   "load", self.cognitive_load_log, block, self.outlet)
+                   "load", self.cognitive_load_log, block, self.outlet, self.subNumber,\
+                   self.current_block_order_number, "nBack")

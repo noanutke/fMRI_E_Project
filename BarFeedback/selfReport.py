@@ -8,7 +8,8 @@ This example is appropriate to illustrates the use of the Android runtime enviro
 
 """
 from __future__ import division
-
+import datetime
+import time as Time
 from expyriment import control, stimuli, io, design, misc
 import copy
 import time
@@ -19,15 +20,22 @@ design.defaults.experiment_background_colour = misc.constants.C_GREY
 design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
 
 
+
 class SelfReport:
     position_x = 0
     line_length = 700
     line_index = 0
 
 
-    def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block, outlet):
+    def __init__(self, exp, screen_height, screen_width, type, cognitive_load_log, block, outlet, subNumber, \
+                 order, task):
+
+        self.task = task;
+        self.screen_height = screen_height - 300
+        self.screen_width = screen_width
         self.outlet = outlet
-        self.line_length = screen_width - 200
+
+        self.line_length = self.screen_width - 300
         self.line_start = 0 - self.line_length / 2
         self.line_end = 0 + self.line_length / 2
         self.exp = exp
@@ -35,10 +43,9 @@ class SelfReport:
         self.old_marks_positions = []
         self.new_marks_positions = []
         self.lines_updates = []
-        self.screen_height = screen_height
-        self.screen_width = screen_width
-        self.lowest_height = 0 - screen_height/2
-        self.highest_height = 0 + screen_height / 2
+
+        self.lowest_height = 0 - self.screen_height/2
+        self.highest_height = 0 + self.screen_height / 2
 
 
         self.canvas = stimuli.BlankScreen()
@@ -54,18 +61,19 @@ class SelfReport:
         self.wait_for_miliseconds = 3000
         self.text_array = []
         self.edges_text = []
+
         if type == "stress":
             self.text_array = self.stressTitleText
             self.edges_text = self.stressEdgesText
-            self.wait_for_miliseconds = 8000
+            self.wait_for_miliseconds = 9000
 
         else:
             self.text_array = self.loadTitleText
             self.edges_text = self.loadEdgedText
-            self.wait_for_miliseconds = 2500
+            self.wait_for_miliseconds = 20000
 
         self.number_of_lines = len(self.text_array)
-        spaces = screen_height / (self.number_of_lines + 1)
+        spaces = self.screen_height / (self.number_of_lines + 1)
 
         index = 1
         for line_text in self.text_array:
@@ -84,12 +92,23 @@ class SelfReport:
 
         # wait for mouse or touch screen response
 
-        self.outlet.push_sample(["start_selfEvaluation_" + type])
+        start_block_time = Time.time()
+        self.outlet.push_sample([task + "s_eval_" + type])
         self.wait_for_marks()
-        self.outlet.push_sample(["end_selfEvaluation_" + type])
+        end_block_time = Time.time()
+        print('noa')
+        self.outlet.push_sample([task + "e_eval_" + type])
         row_to_insert = self.get_positions_array_in_precentage()
-        row_to_insert.insert(0, block)
+        time = datetime.datetime.now()
+        current_hour = str(datetime.datetime.now().hour)
+        current_min = str(datetime.datetime.now().minute)
+        row_to_insert.insert(0, order)
+        row_to_insert.insert(0, current_hour + current_min)
+        row_to_insert.insert(0, subNumber)
+        row_to_insert.insert(0, task)
         cognitive_load_log.add_row(row_to_insert)
+        end_block_time = Time.time()
+        print('noa')
 
 
     def paint_all_lines(self):
@@ -107,16 +126,18 @@ class SelfReport:
         self.old_marks_positions = self.new_marks_positions
 
     def update_line(self, y_position, mark_position):
-        markline = stimuli.Rectangle(size=(1,25),
+        delay = 0
+        markline = stimuli.Rectangle(size=(6,22),
                     position=(mark_position, y_position+16),
                     colour=misc.constants.C_RED)
-        markline.plot(self.canvas)
-        cover =  stimuli.Rectangle(size=(1,25),
+        delay += markline.plot(self.canvas)
+        cover =  stimuli.Rectangle(size=(6,22),
                     position=(self.old_marks_positions[self.line_index], y_position+16),
                     colour=misc.constants.C_GREY)
-        cover.plot(self.canvas)
-        self.canvas.present()
+        delay += cover.plot(self.canvas)
+        delay += self.canvas.present()
         self.old_marks_positions[self.line_index] = mark_position
+        return delay
 
 
 
@@ -128,7 +149,7 @@ class SelfReport:
         if mark_position is not None:
 
 
-            markline = stimuli.Rectangle(size=(1,25),
+            markline = stimuli.Rectangle(size=(6,22),
                         position=(mark_position, line.position[1]+16),
                         colour=misc.constants.C_RED)
             markline.plot(canvas)
@@ -162,18 +183,22 @@ class SelfReport:
             elif button != None  and self.line_index == len(self.new_marks_positions)-1:
                 continue;
 
-            if self.new_marks_positions[self.line_index] + axis0 < self.line_start or \
-                self.new_marks_positions[self.line_index] + axis0 > self.line_end:
-                break
 
 
             if abs(axis0) > 0.1:
-                self.new_marks_positions[self.line_index] += axis0*3;
+                if self.new_marks_positions[self.line_index] + axis0*10 >= self.line_end:
+                    self.new_marks_positions[self.line_index] = self.line_end - 1;
+                if self.new_marks_positions[self.line_index] + axis0*10 <= self.line_start:
+                    self.new_marks_positions[self.line_index] = self.line_start + 1;
+                else:
+                    self.new_marks_positions[self.line_index] += axis0*10;
 
             if abs(self.new_marks_positions[self.line_index] - \
             self.old_marks_positions[self.line_index]) > 1:
-                self.update_line(self.line_positions_y[self.line_index], \
+
+                delay = self.update_line(self.line_positions_y[self.line_index], \
                                  self.new_marks_positions[self.line_index])
+                self.wait_for_miliseconds -= delay
 
     def check_if_mouse_on_line(self, y_position, mark_position):
         if abs(mark_position[1] - y_position) <= 50 and \
@@ -186,9 +211,9 @@ class SelfReport:
     def write_text(self, text_above, text_edges, y_position, canvas):
         line_start = 0 - (self.line_length / 2)
         line_end = 0 + (self.line_length / 2)
-        text_above = stimuli.TextLine(text_above, [0-10, y_position + 40], text_font='Monospace')
-        text_start = stimuli.TextLine(text_edges[0], [line_start - 60, y_position + 20], text_font='Monospace')
-        text_end = stimuli.TextLine(text_edges[1], [line_end + 50, y_position + 20 ], text_font='Monospace')
+        text_above = stimuli.TextLine(text_above, [0-10, y_position + 40], text_font='Monospace', text_size=40)
+        text_start = stimuli.TextLine(text_edges[0], [line_start - 60, y_position + 20], text_font='Monospace', text_size=40)
+        text_end = stimuli.TextLine(text_edges[1], [line_end + 50, y_position + 20 ], text_font='Monospace', text_size=40)
         text_above.plot(canvas)
         text_start.plot(canvas)
         text_end.plot(canvas)
@@ -196,6 +221,7 @@ class SelfReport:
     def get_positions_array_in_precentage(self):
         precentage_array = []
         line_start = 0 - (self.line_length / 2)
+
         index = 0
         for position in self.new_marks_positions:
             precentage_array.insert(index, (position - line_start) / self.line_length * 100)
