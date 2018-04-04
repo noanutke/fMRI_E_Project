@@ -27,19 +27,19 @@ class RestBlock:
 
     def start_rest(self):
 
-        self.lsl_stream.push_sample([self.task + "_s_inst"])
+        self.lsl_stream.push_sample(["instructions_start_1_task_" + self.task])
         cont = self.write_anticipation_text(self.next_block, self.block_type, self.stimuli_type, self.exp)
 
-        self.lsl_stream.push_sample([self.task + "_e_inst"])
+        self.lsl_stream.push_sample(["instructions_end_1_task_" + self.task])
         if cont == False:
             return False
         if self.block_type == 'p':
             return True;
         else:
-            self.lsl_stream.push_sample([self.task + "_s_fix"])
+            self.lsl_stream.push_sample(["fixation_start_1_task_" + self.task])
             cont = self.paint_cross(self.exp)
             self.lsl_stream\
-                .push_sample([self.task + "_e_fix"])
+                .push_sample(["fixation_end_1_task_" + self.task])
             if cont == True:
                 return True
             return False

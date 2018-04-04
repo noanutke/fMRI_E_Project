@@ -35,7 +35,7 @@ class SelfReport:
         self.screen_width = screen_width
         self.outlet = outlet
 
-        self.line_length = self.screen_width - 300
+        self.line_length = self.screen_width*0.5
         self.line_start = 0 - self.line_length / 2
         self.line_end = 0 + self.line_length / 2
         self.exp = exp
@@ -93,11 +93,11 @@ class SelfReport:
         # wait for mouse or touch screen response
 
         start_block_time = Time.time()
-        self.outlet.push_sample([task + "s_eval_" + type])
+        self.outlet.push_sample(["eval_task_" + task + "_start_1_type_" + type])
         self.wait_for_marks()
         end_block_time = Time.time()
         print('noa')
-        self.outlet.push_sample([task + "e_eval_" + type])
+        self.outlet.push_sample(["eval_task_" + task + "_end_1_type_" + type])
         row_to_insert = self.get_positions_array_in_precentage()
         time = datetime.datetime.now()
         current_hour = str(datetime.datetime.now().hour)

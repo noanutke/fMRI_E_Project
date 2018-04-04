@@ -18,8 +18,14 @@ class stroop:
     folder = 'NewStroop'
     test_trials_number = 16
     practice_trials_number = 8
-    up_key = 1
-    down_key = 0
+    test_up_key = 0
+    test_down_key = 2
+
+    practice_up_key = 1
+    practice_down_key = 0
+
+    up_key = -1
+    down_key = -1
     port = None;
 
     def __init__(self, exp, start_time, screen_height, screen_width, start_fast, lsl_stream, subNumber):
@@ -58,14 +64,16 @@ class stroop:
         self.block = block
         self.condition = condition
         self.is_practice = True if self.condition == "practice" else False
+        self.up_key = self.practice_up_key if self.is_practice else self.test_up_key
+        self.down_key = self.practice_down_key if self.is_practice else self.test_down_key
         self.port = port
         self.locations = locations
         self.directions = directions
 
-        self.outlet.push_sample(["sp_p" + ("1" if self.is_practice else "0") \
-                                 + "_c" + ("1" if "cong" in self.block else "0") \
-                                 + "_o" + self.order \
-                                 + "_s" + self.subNumber + "_bi" + str(block_index+1)])
+        self.outlet.push_sample(["startBlock_task_stroop_practice_" + ("1" if self.is_practice else "0") \
+                                 + "_cond_" + ("1" if "cong" in self.block else "0") \
+                                 + "_order_" + self.order \
+                                 + "_subNumber_" + self.subNumber + "_blockIndex_" + str(block_index+1)])
         self.run_experiment()
 
 
@@ -94,10 +102,10 @@ class stroop:
 
             time_delay += canvas.present();
 
-            self.outlet.push_sample(["sp_arr_" + ("u" if "up" in self.directions[trial_index] else "d") \
-                                    + "_"  + ("u" if "up" in self.locations[trial_index] else "d")])
+            self.outlet.push_sample(["stimulus_task_stroop_type_arrow_location_" + ("u" if "up" in self.directions[trial_index] else "d") \
+                                    + "_direction_"  + ("u" if "up" in self.locations[trial_index] else "d")])
 
-            key, rt = self.game_controller.wait_press([self.up_key, self.down_key], self.duration, process_control_events=False)
+            key, rt = self.game_controller.wait_press([0,1,2,3], self.duration, process_control_events=False)
             canvas = stimuli.BlankScreen()
             cross = stimuli.FixCross((50, 50), (0, 0), 5)
 
@@ -109,8 +117,8 @@ class stroop:
                 time_delay += picture_arrow.plot(canvas)
                 time_delay += cross.plot(canvas)
                 time_delay += canvas.present()
-                self.port.setData(int(50))
-                self.outlet.push_sample(["sp_k_" + str(key)])
+
+                self.outlet.push_sample(["keyPressed_task_stroop_key_" + str(key)])
                 self.exp.clock.wait(self.duration - rt) # wait the rest of the ISI before going on
 
                 canvas = stimuli.BlankScreen()
@@ -125,13 +133,13 @@ class stroop:
                 cross = stimuli.FixCross((50, 50), (0, 0), 5)
                 time_delay += cross.plot(canvas)
                 time_delay += canvas.present()
-                key, rt = self.game_controller.wait_press([self.up_key, self.down_key], self.isi - time_delay,
+                key, rt = self.game_controller.wait_press([0,1,2,3], self.isi - time_delay,
                                                           process_control_events=False)
                 if key != None:
                     self.exp.clock.wait(
                         self.isi - rt - time_delay)  # wait the rest of the ISI before going on
 
-                self.outlet.push_sample(["sp_k_" + str(key)])
+                self.outlet.push_sample(["keyPressed_task_stroop_key_" + str(key)])
 
 
             self.save_trial_data(key, rt, trial_index)
@@ -167,7 +175,7 @@ class stroop:
 
     def save_trial_data(self, key, rt, trial_index):
         is_success = self.is_success(self.directions[trial_index], key)
-        self.outlet.push_sample(["sp_res_" + ("1" if is_success else "0")])
+        self.outlet.push_sample(["trialResult_task_stroop_success_" + ("1" if is_success else "0")])
         self.exp.data.add([str(datetime.datetime.now()),
                            self.locations[trial_index], self.directions[trial_index], \
                            key, rt, is_success, self.is_practice \

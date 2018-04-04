@@ -15,10 +15,18 @@ from pylsl import StreamInfo, StreamOutlet
 
 class Nback:
     exp = None
-    single_target = 0
-    dual_target = 1
+    test_single_target = 2
+    test_dual_target = 0
+
+    practice_single_target = 0
+    practice_dual_target = 1
+
+    single_target = -1
+    dual_target = -1
+
     n=0
     port = None
+    targets_amount = 4;
 
 
     def __init__(self, exp, start_time, screen_height, screen_width, start_fast, use_bar, outlet, subNumber):
@@ -40,6 +48,7 @@ class Nback:
         self.is_dual_practice = False
         self.correct_trials = 0
         self.hit_trials = 0
+        self.FA_trials = 0
         self.rt_practice = 0
         self.trials_number = 0
         self.last_trial_error = False
@@ -74,16 +83,18 @@ class Nback:
 
         self.is_practice = True if stimuli_group == 'p' else False
         self.is_dual_practice = True if stimuli_group == 'p' and stimuli_type == 'both' else False
+        self.single_target = self.practice_single_target if self.is_practice else self.test_single_target
+        self.dual_target = self.practice_dual_target if self.is_practice else self.test_dual_target
 
         self.is_baseline = isBaseline
 
         if self.is_practice == True:
             self.rt_practice = 0
 
-        self.outlet.push_sample(["nk_p" + ("1" if self.is_practice else "0") \
-                                 + "_b" + ("1" if self.is_baseline else "0") \
-                                 + "_l" + str(self.n) + "_o" + self.order \
-                                 + "_s" + self.subNumber + "_bi" + str(block_index+1)])
+        self.outlet.push_sample(["startBlock_task_nBack_practice_" + ("1" if self.is_practice else "0") \
+                                 + "_baseline_" + ("1" if self.is_baseline else "0") \
+                                 + "_level_" + str(self.n) + "_order_" + self.order \
+                                 + "_subNumber_" + self.subNumber + "_blockIndex_" + str(block_index+1)])
         self.init_stimuli(letters_list, locations_list)
 
         self.last_trial_error = False
@@ -155,17 +166,15 @@ class Nback:
 
             if self.stimuli_type != "v" and self.digit != None:
                 audio.play()
-                self.outlet.push_sample(["nk_letter_" + str(self.digit)])
+                self.outlet.push_sample(["stimulus_task_nBack_type_letter_letter_" + str(self.digit)])
                 audio.unload()
 
 
 
             if self.stimuli_type != "a" and len(self.positions_list) > 0:
-                self.outlet.push_sample(["nk_vis_" + self.position_text])
+                self.outlet.push_sample(["stimulus_task_nBack_type_vis_location_" +self.position_text])
 
-            self.port.setData(int(60))
-
-            key, rt = game1.wait_press([self.single_target, self.dual_target], stimuliDuration, process_control_events=False)
+            key, rt = game1.wait_press([0,1,2,3], stimuliDuration, process_control_events=False)
             if key is None:
                 # we have waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
@@ -176,16 +185,16 @@ class Nback:
                 time_delay_after_stimuli += canvas.present()
                 if target != None:
                     time_delay_after_stimuli += target.unload()
-                key, rt = game1.wait_press([self.single_target, self.dual_target], ISI\
+                key, rt = game1.wait_press([0,1,2,3], ISI\
                                                  - time_delay_after_stimuli- time_delay_for_isi)
                 if key != None:
-                    self.outlet.push_sample(["nk_k_" + str(key)])
-                    self.port.setData(int(70))
+                    self.outlet.push_sample(["keyPressed_task_nBack_key_" + str(key)])
+
                     self.exp.clock.wait(ISI - rt - time_delay_for_isi - time_delay_after_stimuli) # wait the rest of the ISI before going on
                     rt = rt + stimuliDuration + time_delay_after_stimuli
             else:
-                self.outlet.push_sample(["nk_k_" + str(key)])
-                self.port.setData(int(70))
+                self.outlet.push_sample(["keyPressed_task_nBack_key_" + str(key)])
+
                 self.exp.clock.wait(stimuliDuration - rt) # wait the rest of the stimuliDuration before removing
                 # we have now waited stimuliDuration so we can remove
                 #self.play_aversive_sound_if_needed(feedback_bar)
@@ -212,7 +221,12 @@ class Nback:
         if self.is_practice == True:
             canvas = stimuli.BlankScreen()
             text_title = stimuli.TextLine("Success Rate", (0,0), text_size=(50))
-            success_rate = str(int(float(self.correct_trials) / self.trials_number * 100))
+            success_rate = str(int(float(self.hit_trials) / self.targets_amount * 100) -
+                               int(float(self.FA_trials) / (self.trials_number - self.targets_amount) * 100))
+            if success_rate < 0:
+                success_rate = "0";
+            if success_rate > 100:
+                success_rate = "100";
             text_number = stimuli.TextLine(success_rate + "%", position=(0, -100),\
                                            text_size=(50))
 
@@ -241,16 +255,19 @@ class Nback:
                                        self.single_target, rt,\
                                       "CorrectResponse", \
                                       True, self.n, "baseline", self.is_practice])
+                    self.hit_trials += 1;
                 elif position_number == self.n and self.digit == self.n:
                     response_to_target = "WrongResponseDual"
                     self.exp.data.add([str(datetime.datetime.now()),
                         self.digit, self.position_text, "Dual", self.single_target, rt, "Wrong Response",\
                                      False , self.n, "baseline", self.is_practice])
+                    self.FA_trials += 1;
                 else:
                     response_to_target_ = "FA"
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, \
                                        self.single_target, rt, "FA", \
                                        False, self.n, "baseline", self.is_practice])
+                    self.FA_trials += 1;
             elif key == self.dual_target:
                 if position_number == self.n and self.digit == self.n:
                     response_to_target = "CorrectResponseDual"
@@ -258,22 +275,26 @@ class Nback:
                         [str(datetime.datetime.now()), self.digit, self.position_text, "Dual", \
                          self.dual_target, rt, "Correct Response", \
                          True, self.n, "baseline", self.is_practice])
+                    self.hit_trials += 1;
                 elif position_number == self.n:
                     response_to_target = "WrongResponseVisual"
                     self.exp.data.add([str(datetime.datetime.now()),
                         self.digit, self.position_text, "Visual", self.single_target, rt, "Wrong Response",\
                                      False , self.n, "baseline", self.is_practice])
+                    self.FA_trials += 1;
                 elif self.digit == self.n:
                     response_to_target = "WrongResponseAuditory"
                     self.exp.data.add([str(datetime.datetime.now()),
                                        self.digit, self.position_text, "Auditory", self.single_target, rt,
                                        "Wrong Response", \
                                        False, self.n, "baseline", self.is_practice])
+                    self.FA_trials += 1;
                 else:
                     response_to_target = "FA"
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, None, \
                                        self.single_target, rt, "FA", \
                                        False, self.n, "baseline", self.is_practice])
+                    self.FA_trials += 1;
             else:
                 response_to_target = "MISSDual"
                 if position_number == self.n and self.digit == self.n:
@@ -317,6 +338,7 @@ class Nback:
                                      False , self.n, self.order, self.is_practice])
                     self.last_trial_error = True
                     self.last_trial_rt = None
+                    self.FA_trials += 1;
                 else:
                     response_to_target = "CorrectResponseAuditory"
                     self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, "Auditory", self.single_target, rt,\
@@ -346,6 +368,7 @@ class Nback:
                                       False, self.n, self.order, self.is_practice])
                 self.last_trial_error = True
                 self.last_trial_rt = None
+                self.FA_trials += 1;
 
         elif key == self.dual_target:
             if self.digit != None and self.digit == self.digit_list[counter - self.n] and \
@@ -369,6 +392,7 @@ class Nback:
                                    ])
                 self.last_trial_error = True
                 self.last_trial_rt = None
+                self.FA_trials += 1
 
             elif self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
                 response_to_target = "WrongResponseVisual"
@@ -378,6 +402,7 @@ class Nback:
                         False , self.n, self.order, self.is_practice])
                 self.last_trial_error = True
                 self.last_trial_rt = None
+                self.FA_trials+= 1
             else:
                 response_to_target = "FA"
                 self.exp.data.add(
@@ -386,6 +411,7 @@ class Nback:
                     False, self.n, self.order, self.is_practice])
                 self.last_trial_error = True
                 self.last_trial_rt = None
+                self.FA_trials += 1
 
         else:
             if self.position_text != None and self.position_text == self.positions_list[counter - self.n]:
@@ -419,5 +445,5 @@ class Nback:
                 self.last_trial_rt = None
                 self.correct_trials += 1
 
-        self.outlet.push_sample(["nk_res_" + response_to_target])
+        self.outlet.push_sample(["trialResult_task_nBack_resultType_" + response_to_target])
 

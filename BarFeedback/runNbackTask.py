@@ -52,10 +52,11 @@ class runNbackTask:
         self.screen_height = screen_height
         self.screen_width = screen_width
 
-        self.outlet.push_sample(["nk_s"])
+        self.outlet.push_sample(["startTask_task_nBack"])
         self.start_again = True
 
     def start_run(self):
+        start_new_exp = False
         while self.start_again == True:
             self.start_again = False
             self.condition = self.choose_condition()
@@ -63,8 +64,8 @@ class runNbackTask:
                 break
             if self.condition != "BlockProtocol_Practice":
                 self.ask_for_order()
-                #self.choose_blocks_order(self.current_block_order_number)
 
+                #self.choose_blocks_order(self.current_block_order_number)
                 #self.init_trials_lists(True, self.current_block_order_number)
 
 
@@ -122,12 +123,12 @@ class runNbackTask:
 
             location_target_index = -1
             if self.practice_type != "v":
-                letters_lists, location_target_index = self.generate_trials\
-                    (nLevel, letters_targets_amount, baseline_target, -1)
+                letters_lists, location_target_index, letters_targets_indices = self.generate_trials\
+                    (nLevel, letters_targets_amount, baseline_target, -1, [])
             if self.practice_type != "a":
 
-                locations_lists, index = self.generate_trials\
-                    (nLevel, locations_targets_amount, baseline_target, location_target_index)
+                locations_lists, index, locations_targets_indices = self.generate_trials\
+                    (nLevel, locations_targets_amount, baseline_target, location_target_index, letters_targets_indices)
 
             if init_from_file != True:
                 if self.practice_type != "v":
@@ -205,7 +206,7 @@ class runNbackTask:
         i = 0
         for trial in trials:
             if i == 0:
-                i += 1
+                i+=1;
                 continue
             if trial == trials[i-1]:
                 same_in_row += 1
@@ -213,9 +214,10 @@ class runNbackTask:
                     return False
             else:
                 same_in_row = 1
+            i+=1
         return True
 
-    def generate_trials(self, n, targets_amount, baseline_target, dual_target_index):
+    def generate_trials(self, n, targets_amount, baseline_target, dual_target_index, other_modality_targets):
 
         trials_amount = 12
         target_demands_ok = False
@@ -227,11 +229,13 @@ class runNbackTask:
                 targets_amount_corrected -= 1
 
 
-            for i in range(targets_amount_corrected):
+            targetsAmount = 0;
+            while targetsAmount < targets_amount_corrected:
                 index = random.randint(n,11)
-                if index in target_indices:
+                if index in target_indices or (index in other_modality_targets):
                     continue
                 target_indices.insert(0, index)
+                targetsAmount += 1 ;
             if self.check_if_target_demands_ok(target_indices):
                 target_demands_ok = True
 
@@ -251,22 +255,22 @@ class runNbackTask:
                         trials.insert(i, trials[i-n])
 
                 else:
-                    trial = random.randint(1,7)
+                    trial = random.randint(1,8)
                     value_to_exclude = baseline_target
                     if n != 0 and i-n >= 0:
                         value_to_exclude = trials[i-n]
-                    if trial >= value_to_exclude:
+                    if trial == value_to_exclude:
                         trial += 1
+                    if trial > 8:
+                        trial = 1
 
                     trials.insert(i, trial)
 
-                if self.check_if_trials_order_ok(trials):
-                    trials_order_ok = True
+            if self.check_if_trials_order_ok(trials):
+                trials_order_ok = True
 
-        dual_target_index = -1
-        if self.practice_type == "both":
-            dual_target_index = target_indices[random.randint(0, len(target_indices)-1)]
-        return (trials, dual_target_index)
+        dual_target_index = target_indices[random.randint(0, len(target_indices)-1)]
+        return (trials, dual_target_index, target_indices)
 
     def ask_for_order(self):
         canvas = stimuli.BlankScreen()
@@ -440,7 +444,7 @@ class runNbackTask:
                 self.experiment.exp.mouse.hide_cursor()
                 self.use_develop_mode = False
                 return 'noStress'
-            elif Basic.overlapping_with_position(pos):
+            elif exit.overlapping_with_position(pos):
                 self.experiment.exp.mouse.hide_cursor()
                 self.use_develop_mode = False
                 return 'exit'

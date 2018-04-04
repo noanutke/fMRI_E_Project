@@ -17,7 +17,7 @@ from pylsl import StreamInfo, StreamOutlet
 
 screen_height = 600
 screen_width = 800
-use_develop_mode = False
+use_develop_mode = True
 
 
 def ask_for_task():

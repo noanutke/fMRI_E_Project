@@ -71,9 +71,10 @@ class runStroopTask:
         self.screen_width = screen_width
 
         self.start_again = True
-        self.outlet.push_sample(["sp_s"])
+        self.outlet.push_sample(["startTask_task_stroop"])
 
     def start_run(self):
+        start_new_exp = False
         while self.start_again == True:
             self.start_again = False
             self.condition = self.choose_condition()
