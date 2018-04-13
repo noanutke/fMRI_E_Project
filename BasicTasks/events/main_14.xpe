@@ -1,0 +1,18 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Wed Apr 11 2018 13:49:34
+#sha1: e5c5e8
+#modules: grid.py (68c27b), writeToExcel.py (93ffb1), nback.py (31fbdc), runStroopTask.py (66ba58), stroop.py (6289c4), runNbackTask.py (487a18), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+443,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+443,design,logged,
+443,Experiment,started
+467,Stimulus,presented,0
+950,Mouse,received,0-False,wait_event
+951,stderr,received,'Traceback (most recent call last):'
+951,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 79, in <module>'
+952,stderr,received,'    str(exp.data._subject), outlet)'
+952,stderr,received,'TypeError: __init__() takes exactly 6 arguments (7 given)'

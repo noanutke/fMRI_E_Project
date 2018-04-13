@@ -1,0 +1,75 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpd-file, coding: cp1255
+#date: Fri Apr 13 2018 11:44:58
+#--EXPERIMENT INFO
+#e mainfile: main.py
+#e sha1: b7e963
+#e modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (e10e8f), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#e Experiment: main
+#e no between subject factors
+#--SUBJECT INFO
+#s id: 29
+subject_id,time,location,direction,trialType,response,rt,is success,is practice,blockType,order
+29,2018-04-13 11:45:33.846000,down,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:36.852000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:39.859000,down,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:42.865000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:45.871000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:48.877000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:51.883000,down,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:54.890000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:45:57.896000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:00.903000,up,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:03.910000,down,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:06.916000,down,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:09.921000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:12.928000,down,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:15.934000,up,pointing_up,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:18.940000,down,pointing_down,None,None,False,False,incong_a,1
+29,2018-04-13 11:46:37.041000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:40.048000,up,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:43.054000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:46.060000,down,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:49.067000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:52.073000,down,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:55.080000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:46:58.086000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:01.092000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:04.098000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:07.105000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:10.113000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:13.120000,up,pointing_up,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:16.127000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:19.132000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:47:22.140000,down,pointing_down,None,None,False,False,cong_b,1
+29,2018-04-13 11:48:09.534000,up,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:12.540000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:15.546000,down,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:18.552000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:21.558000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:24.565000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:27.571000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:30.577000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:33.583000,down,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:36.589000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:39.596000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:42.601000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:45.607000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:48.614000,down,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:51.620000,up,pointing_up,None,None,False,False,cong_a,1
+29,2018-04-13 11:48:54.626000,up,pointing_down,None,None,False,False,cong_a,1
+29,2018-04-13 11:49:09.727000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:12.733000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:15.739000,down,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:18.746000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:21.752000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:24.759000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:27.765000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:30.771000,down,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:33.777000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:36.782000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:39.788000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:42.795000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:45.802000,up,pointing_up,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:48.808000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:51.814000,down,pointing_down,None,None,False,False,incong_b,1
+29,2018-04-13 11:49:54.820000,up,pointing_up,None,None,False,False,incong_b,1

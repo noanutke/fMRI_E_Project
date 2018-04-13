@@ -1,0 +1,32 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 10:46:57
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (e10e8f), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+392,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+392,design,logged,
+392,Experiment,started
+411,Stimulus,presented,0
+1300,Mouse,received,0-False,wait_event
+1320,Stimulus,presented,7
+1709,Mouse,received,0-False,wait_event
+1725,Stimulus,presented,14
+2349,Mouse,received,0-False,wait_event
+2391,stderr,received,'Traceback (most recent call last):'
+2391,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 85, in <module>'
+2391,stderr,received,'    start_new_exp = stroop.start_run()'
+2391,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 111, in start_run'
+2391,stderr,received,'    start_new_exp = self.run_blocks();'
+2391,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 329, in run_blocks'
+2392,stderr,received,'    self.evaluate_stress(str(block))'
+2392,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 378, in evaluate_stress'
+2393,stderr,received,'    self.current_block_order_number, "stroop")'
+2393,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\selfReport.py", line 97, in __init__'
+2393,stderr,received,'    self.paint_all_lines();'
+2394,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\selfReport.py", line 125, in paint_all_lines'
+2394,stderr,received,'    , self.canvas, self.new_marks_positions[index])'
+2394,stderr,received,'IndexError: list index out of range'

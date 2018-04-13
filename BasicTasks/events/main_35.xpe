@@ -1,0 +1,44 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 12:03:36
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (20087e), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+380,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+381,design,logged,
+381,Experiment,started
+400,Stimulus,presented,0
+958,Mouse,received,0-False,wait_event
+977,Stimulus,presented,7
+2079,Mouse,received,0-False,wait_event
+2092,Stimulus,presented,14
+2495,Mouse,received,0-False,wait_event
+2508,Stimulus,presented,21
+2815,Mouse,received,0-False,wait_event
+2851,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+2879,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+2900,Stimulus,presented,29
+3360,Keyboard,received,32,wait
+3411,Stimulus,presented,32
+3413,Stimulus,played,./audio_final/4.wav
+3913,Gamepad,received,None,wait_press
+3951,Stimulus,presented,32
+3953,stderr,received,'Traceback (most recent call last):'
+3953,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 80, in <module>'
+3954,stderr,received,'    start_new_exp = nBack.start_run();'
+3954,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 94, in start_run'
+3954,stderr,received,'    start_new_exp = self.run_blocks();'
+3954,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 516, in run_blocks'
+3955,stderr,received,'    self.current_block_order_number,block_index)'
+3955,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 89, in run'
+3956,stderr,received,'    self.run_experiment()'
+3956,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 171, in run_experiment'
+3956,stderr,received,'    - time_delay_after_stimuli- time_delay_for_isi)'
+3956,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 281, in wait_press'
+3957,stderr,received,'    if self.get_button(button):'
+3957,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 180, in get_button'
+3957,stderr,received,'    return self._joystick.get_button(button)'
+3957,stderr,received,'pygame.error: Invalid joystick button'

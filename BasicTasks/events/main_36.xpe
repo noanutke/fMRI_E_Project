@@ -1,0 +1,44 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 12:04:25
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (6f4435), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+395,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+395,design,logged,
+395,Experiment,started
+418,Stimulus,presented,0
+1140,Mouse,received,0-False,wait_event
+1159,Stimulus,presented,7
+2188,Mouse,received,0-False,wait_event
+2201,Stimulus,presented,14
+2532,Mouse,received,0-False,wait_event
+2546,Stimulus,presented,21
+2852,Mouse,received,0-False,wait_event
+2886,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+2915,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+2935,Stimulus,presented,29
+3421,Keyboard,received,32,wait
+3477,Stimulus,presented,32
+3479,Stimulus,played,./audio_final/2.wav
+3979,Gamepad,received,None,wait_press
+4018,Stimulus,presented,32
+6455,Gamepad,received,None,wait_press
+6456,stderr,received,'Traceback (most recent call last):'
+6456,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 80, in <module>'
+6456,stderr,received,'    start_new_exp = nBack.start_run();'
+6456,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 94, in start_run'
+6456,stderr,received,'    start_new_exp = self.run_blocks();'
+6456,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 516, in run_blocks'
+6458,stderr,received,'    self.current_block_order_number,block_index)'
+6458,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 89, in run'
+6458,stderr,received,'    self.run_experiment()'
+6458,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 193, in run_experiment'
+6459,stderr,received,'    self.save_trial_data(key, rt, trial)'
+6459,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 293, in save_trial_data'
+6459,stderr,received,'    "_actual_" + actual_response])'
+6460,stderr,received,"TypeError: cannot concatenate 'str' and 'int' objects"
+6475,Data,saved

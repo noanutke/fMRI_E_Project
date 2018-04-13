@@ -1,0 +1,66 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 11:56:43
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (e10e8f), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+88,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+88,design,logged,
+88,Experiment,started
+104,Stimulus,presented,0
+23946,Mouse,received,0-False,wait_event
+23977,Stimulus,presented,7
+24458,Mouse,received,0-False,wait_event
+24471,Stimulus,presented,14
+24994,Mouse,received,0-False,wait_event
+25011,Stimulus,presented,21
+25482,Mouse,received,0-False,wait_event
+25520,Picture,loaded,./pictures/instructions_nBack/slide3_p_v.png
+25548,Picture,loaded,./pictures/instructions_nBack/slide3_p_v.png
+25570,Stimulus,presented,29
+26701,Keyboard,received,8,wait
+26721,Stimulus,presented,31
+27850,Mouse,received,0-False,wait_event
+27864,Stimulus,presented,38
+28362,Mouse,received,0-False,wait_event
+28375,Stimulus,presented,45
+28714,Mouse,received,0-False,wait_event
+28727,Stimulus,presented,52
+29682,Mouse,received,0-False,wait_event
+29718,Picture,loaded,./pictures/instructions_nBack/slide1_p_both.png
+29747,Picture,loaded,./pictures/instructions_nBack/slide1_p_both.png
+29767,Stimulus,presented,60
+30542,Keyboard,received,8,wait
+30559,Stimulus,presented,62
+31451,Mouse,received,0-False,wait_event
+31465,Stimulus,presented,69
+32017,Mouse,received,0-False,wait_event
+32030,Stimulus,presented,76
+32729,Mouse,received,0-False,wait_event
+32743,Stimulus,presented,83
+33362,Mouse,received,0-False,wait_event
+33398,Picture,loaded,./pictures/instructions_nBack/slide1_p_a.png
+33427,Picture,loaded,./pictures/instructions_nBack/slide1_p_a.png
+33448,Stimulus,presented,91
+34722,Keyboard,received,32,wait
+34740,Stimulus,presented,94
+34742,Stimulus,played,./audio_final/5.wav
+34742,stderr,received,'Traceback (most recent call last):'
+34743,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 80, in <module>'
+34743,stderr,received,'    start_new_exp = nBack.start_run();'
+34743,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 94, in start_run'
+34744,stderr,received,'    start_new_exp = self.run_blocks();'
+34744,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 516, in run_blocks'
+34745,stderr,received,'    self.current_block_order_number,block_index)'
+34745,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 89, in run'
+34746,stderr,received,'    self.run_experiment()'
+34746,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 159, in run_experiment'
+34746,stderr,received,'    key, rt = game1.wait_press(self.stimuli_duration, self.stimuli_duration, process_control_events=False)'
+34747,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 281, in wait_press'
+34747,stderr,received,'    if self.get_button(button):'
+34748,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 180, in get_button'
+34748,stderr,received,'    return self._joystick.get_button(button)'
+34748,stderr,received,'pygame.error: Invalid joystick button'

@@ -1,0 +1,42 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 12:02:33
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (fbeb73), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+379,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+379,design,logged,
+380,Experiment,started
+402,Stimulus,presented,0
+928,Mouse,received,0-False,wait_event
+947,Stimulus,presented,7
+2399,Mouse,received,0-False,wait_event
+2412,Stimulus,presented,14
+3351,Mouse,received,0-False,wait_event
+3365,Stimulus,presented,21
+3679,Mouse,received,0-False,wait_event
+3715,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+3743,Picture,loaded,./pictures/instructions_nBack/slide2_p_both.png
+3764,Stimulus,presented,29
+4151,Keyboard,received,32,wait
+4212,Stimulus,presented,32
+4213,Stimulus,played,./audio_final/1.wav
+4214,stderr,received,'Traceback (most recent call last):'
+4214,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 80, in <module>'
+4214,stderr,received,'    start_new_exp = nBack.start_run();'
+4214,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 94, in start_run'
+4214,stderr,received,'    start_new_exp = self.run_blocks();'
+4214,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runNbackTask.py", line 516, in run_blocks'
+4216,stderr,received,'    self.current_block_order_number,block_index)'
+4216,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 89, in run'
+4216,stderr,received,'    self.run_experiment()'
+4216,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\nback.py", line 159, in run_experiment'
+4216,stderr,received,'    key, rt = game1.wait_press(self.positions_list_numbers, self.stimuli_duration, process_control_events=False)'
+4217,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 281, in wait_press'
+4217,stderr,received,'    if self.get_button(button):'
+4217,stderr,received,'  File "C:\\Program Files (x86)\\PsychoPy2\\lib\\site-packages\\expyriment\\io\\_gamepad.py", line 180, in get_button'
+4217,stderr,received,'    return self._joystick.get_button(button)'
+4217,stderr,received,'TypeError: an integer is required'

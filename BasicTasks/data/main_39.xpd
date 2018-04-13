@@ -1,0 +1,15 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpd-file, coding: cp1255
+#date: Fri Apr 13 2018 12:14:55
+#--EXPERIMENT INFO
+#e mainfile: main.py
+#e sha1: b7e963
+#e modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (e6f01d), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#e Experiment: main
+#e no between subject factors
+#--SUBJECT INFO
+#s id: 39
+subject_id,time,digit,position,targetType,response,rt,responseType,is success,n,order,is practice
+39,2018-04-13 12:15:02.494000,7,Left,None,None,None,CorrectRejection,True,2,,True
+39,2018-04-13 12:15:05.531000,1,BottomLeft,None,None,None,CorrectRejection,True,2,,True
+39,2018-04-13 12:15:08.563000,2,Left,Visual,None,None,MISSVisual,False,2,,True
+39,2018-04-13 12:15:11.599000,4,TopMiddle,None,None,None,CorrectRejection,True,2,,True

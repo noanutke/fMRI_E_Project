@@ -1,0 +1,36 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Fri Apr 13 2018 10:54:08
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (e10e8f), runStroopTask.py (af1869), stroop.py (6f7be0), runNbackTask.py (615c2a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+386,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+386,design,logged,
+386,Experiment,started
+410,Stimulus,presented,0
+1228,Mouse,received,0-False,wait_event
+1246,Stimulus,presented,7
+1531,Mouse,received,0-False,wait_event
+1546,Stimulus,presented,14
+1907,Mouse,received,0-False,wait_event
+1943,Stimulus,presented,23
+1955,Gamepad,received,None,wait_press
+1955,stderr,received,'Traceback (most recent call last):'
+1955,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 85, in <module>'
+1955,stderr,received,'    start_new_exp = stroop.start_run()'
+1955,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 111, in start_run'
+1956,stderr,received,'    start_new_exp = self.run_blocks();'
+1956,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 329, in run_blocks'
+1956,stderr,received,'    self.evaluate_stress(str(block))'
+1956,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 378, in evaluate_stress'
+1957,stderr,received,'    self.current_block_order_number, "stroop")'
+1958,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\selfReport.py", line 103, in __init__'
+1958,stderr,received,'    self.wait_for_marks()'
+1958,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\selfReport.py", line 178, in wait_for_marks'
+1958,stderr,received,'    self.update_line_if_needed()'
+1958,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\selfReport.py", line 182, in update_line_if_needed'
+1959,stderr,received,'    self.old_marks_positions[self.line_index]) > self.min_movement_to_update:'
+1959,stderr,received,"AttributeError: SelfReport instance has no attribute 'min_movement_to_update'"

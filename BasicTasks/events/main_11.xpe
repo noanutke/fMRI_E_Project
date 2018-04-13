@@ -1,0 +1,24 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Wed Apr 11 2018 12:29:51
+#sha1: e5c5e8
+#modules: grid.py (68c27b), writeToExcel.py (93ffb1), nback.py (e7d68d), runStroopTask.py (7d9a32), stroop.py (6289c4), runNbackTask.py (cdee0a), restBlock.py (9d51ab)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+439,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+440,design,logged,
+440,Experiment,started
+461,Stimulus,presented,0
+927,Mouse,received,0-False,wait_event
+950,Stimulus,presented,7
+4735,Mouse,received,0-False,wait_event
+4736,stderr,received,'Traceback (most recent call last):'
+4736,stderr,received,'  File "C:/Users/NOA/fMRI_E_Project/BasicTasks/main.py", line 85, in <module>'
+4737,stderr,received,'    start_new_exp = stroop.start_run()'
+4737,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 94, in start_run'
+4737,stderr,received,'    start_new_exp = self.run_blocks();'
+4737,stderr,received,'  File "C:\\Users\\NOA\\fMRI_E_Project\\BasicTasks\\runStroopTask.py", line 314, in run_blocks'
+4738,stderr,received,"    exp = self.experiment.exp, wait_for_key=self.condition == 'practice')"
+4738,stderr,received,"TypeError: __init__() got an unexpected keyword argument 'wait_for_key'"
