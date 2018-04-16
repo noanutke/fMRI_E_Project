@@ -2,3 +2,5 @@ BasicTasks/data/
 BasicTasks/events/
 *.pyc
 *.csv
+*.xpd
+*.xpe
