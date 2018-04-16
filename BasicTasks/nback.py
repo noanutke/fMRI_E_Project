@@ -224,7 +224,7 @@ class Nback:
             canvas.present();
 
     def get_target_type(self, counter):
-        position_number = int(self.positions_list_numbers[counter])
+
         is_auditory_target = False;
         is_visual_target = False
         if self.with_audio_stimuli:
@@ -233,6 +233,7 @@ class Nback:
                  counter >= self.n and self.digit == self.digit_list[counter - self.n]:
                  is_auditory_target = True
         if self.with_visual_stimuli:
+            position_number = int(self.positions_list_numbers[counter])
             if (self.is_baseline and position_number == self.n) or \
                  (not self.is_baseline and \
                  counter >= self.n and position_number == int(self.positions_list_numbers[counter - self.n])):
@@ -260,7 +261,7 @@ class Nback:
                 return (correct_response_prefix + target, True)
             elif target is None:
                 self.FA_trials += 1;
-                return (FA_prefix + target, False)
+                return (FA_prefix, False)
             else:
                 return (wrong_response_prefix + target, False)
         elif key == self.single_target:
@@ -269,7 +270,7 @@ class Nback:
                 return (correct_response_prefix + target, True)
             elif target is None:
                 self.FA_trials += 1;
-                return (FA_prefix + target, False)
+                return (FA_prefix, False)
             else:
                 return (wrong_response_prefix + target, False)
         else:
@@ -286,7 +287,7 @@ class Nback:
         self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, target_type, \
                            key, rt, response_to_target, is_success, self.n, self.order, self.is_practice])
 
-        utils.push_sample_current_time(self.outlet, ["trialResult_task_nBack_resultType_" + response_to_target])
+        utils.push_sample_current_time(self.outlet, ["trialResultDescription_task_nBack_resultType_" + response_to_target])
 
         expected_response = "1";
         actual_response = "1";

@@ -11,6 +11,7 @@ from __future__ import division
 import datetime
 from expyriment import stimuli, io, design, misc
 import utils
+import copy
 
 design.defaults.experiment_background_colour = misc.constants.C_GREY
 design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
@@ -28,7 +29,7 @@ class SelfReport:
     start_text_distance_from_scale = -60
     end_text_distance_from_Scale = 50
     text_size = 40
-    min_movement_for_update = 1 #to prevent over sensitivity of joystick we only update marker if the
+    min_movement_for_update = 0.1 #to prevent over sensitivity of joystick we only update marker if the
                                 # movement is bigger than this value
     increase_movement_speed_by = 10
     wait_for_updates_cycle = 10 #for how long we should wait for input before checking the input status (mili seconds)
@@ -128,7 +129,7 @@ class SelfReport:
             self.paint_line(y_position, self.canvas, self.new_marks_positions[index])
             index += 1
         self.canvas.present()
-        self.old_marks_positions = self.new_marks_positions
+        self.old_marks_positions = copy.deepcopy(self.new_marks_positions);
 
     def update_line(self, y_position, mark_position):
         delay = 0

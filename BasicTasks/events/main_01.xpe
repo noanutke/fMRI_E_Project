@@ -1,0 +1,27 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpe-file, coding: cp1255
+#date: Mon Apr 16 2018 19:40:48
+#sha1: b7e963
+#modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (973f91), runStroopTask.py (16b595), stroop.py (9ae727), runNbackTask.py (28121d), restBlock.py (2ef7b3), utils.py (02007a)
+#display: size=(800, 600), window_mode=True, open_gl=2
+#os: ('Windows', 'DESKTOP-A6JHBFQ', '10', '10.0.16299', 'AMD64', 'Intel64 Family 6 Model 142 Stepping 9, GenuineIntel')
+Time,Type,Event,Value,Detail,Detail2
+805,design,log,
+#design: #exp: main
+#design: block_cnt,block_id,trial_cnt,trial_id
+805,design,logged,
+806,Experiment,started
+864,Stimulus,presented,0
+2317,Mouse,received,0-False,wait_event
+2379,Stimulus,presented,7
+2581,Mouse,received,0-False,wait_event
+2596,Stimulus,presented,14
+2949,Mouse,received,0-False,wait_event
+2964,Stimulus,presented,21
+3461,Mouse,received,0-False,wait_event
+3500,Picture,loaded,./pictures/instructions_nBack/slide1_p_a.png
+3537,Picture,loaded,./pictures/instructions_nBack/slide1_p_a.png
+3567,Stimulus,presented,29
+4753,Experiment,paused
+4757,Stimulus,presented,31
+5578,Keyboard,received,y,wait_char
+5578,Experiment,ended

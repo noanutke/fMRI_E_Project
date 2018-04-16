@@ -1,0 +1,11 @@
+#Expyriment 0.9.0 (Python 2.7.11), .xpd-file, coding: cp1255
+#date: Mon Apr 16 2018 19:40:48
+#--EXPERIMENT INFO
+#e mainfile: main.py
+#e sha1: b7e963
+#e modules: grid.py (68c27b), writeToExcel.py (6476cc), nback.py (973f91), runStroopTask.py (16b595), stroop.py (9ae727), runNbackTask.py (28121d), restBlock.py (2ef7b3), utils.py (02007a)
+#e Experiment: main
+#e no between subject factors
+#--SUBJECT INFO
+#s id: 1
+subject_id,
