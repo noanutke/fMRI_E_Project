@@ -1,0 +1,4 @@
+BasicTasks/data/
+BasicTasks/events/
+*.pyc
+*.csv
