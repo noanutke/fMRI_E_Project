@@ -4,6 +4,7 @@
 
 from expyriment import stimuli, io
 import datetime
+import utils
 
 class stroop:
     exp = None
@@ -55,14 +56,15 @@ class stroop:
         self.directions = directions
 
         # send start stroop block LSL trigger
-        self.outlet.push_sample(["startBlock_task_stroop_practice_" + ("1" if self.is_practice else "0") \
-                                 + "_cond_" + ("1" if "cong" in self.block else "0") \
+        utils.push_sample_current_time(self.outlet, ["startBlock_task_stroop_practice_" + ("1" if self.is_practice else "0") \
+                                 + "_incong_" + ("1" if "incong" in self.block else "0") \
                                  + "_order_" + self.order \
                                  + "_subNumber_" + self.subNumber + "_blockIndex_" + str(block_index+1)])
+
         self.run_experiment()
 
         # send end stroop block LSL trigger
-        self.outlet.push_sample(["endBlock_task_stroop"]);
+        utils.push_sample_current_time(self.outlet,["endBlock_task_stroop"])
 
 
     # run block
@@ -94,7 +96,7 @@ class stroop:
             time_delay += canvas.present();
 
             # send trigger to LSL with arrow details
-            self.outlet.push_sample(["stimulus_task_stroop_type_arrow_location_" + ("u" if "up" in self.directions[trial_index] else "d") \
+            utils.push_sample_current_time(self.outlet, ["stimulus_task_stroop_type_arrow_location_" + ("u" if "up" in self.directions[trial_index] else "d") \
                                     + "_direction_"  + ("u" if "up" in self.locations[trial_index] else "d")])
 
             # wait for subject's response. Wait only for "duration" time
@@ -103,7 +105,7 @@ class stroop:
 
             # we get here is subjects responded or of duration of stimulus ended
             if key != None: # subject responded and stimulus duration hasn't ended
-                self.outlet.push_sample(["keyPressed_task_stroop_key_" + str(key)])
+                utils.push_sample_current_time(self.outlet, ["keyPressed_task_stroop_key_" + str(key)])
                 self.exp.clock.wait(self.duration - rt) # wait the rest of the stimulus duration before going on
 
                 # we get here when stimulus duration has ended (and subject responded)
@@ -124,7 +126,7 @@ class stroop:
                     self.exp.clock.wait(
                         self.isi - rt - time_delay)  # wait the rest of the ISI before going on
 
-                self.outlet.push_sample(["keyPressed_task_stroop_key_" + str(key)])
+                utils.push_sample_current_time(self.outlet, ["keyPressed_task_stroop_key_" + str(key)])
             self.save_trial_data(key, rt, trial_index)
 
         self.show_feedback_if_needed()
@@ -165,7 +167,8 @@ class stroop:
 
     def save_trial_data(self, key, rt, trial_index):
         is_success = self.is_success(self.directions[trial_index], key)
-        self.outlet.push_sample(["trialResult_task_stroop_success_" + ("1" if is_success else "0")])
+        utils.push_sample_current_time(self.outlet, \
+                                       ["trialResult_task_stroop_success_" + ("1" if is_success else "0")])
         self.exp.data.add([str(datetime.datetime.now()),
                            self.locations[trial_index], self.directions[trial_index], \
                            key, rt, is_success, self.is_practice \

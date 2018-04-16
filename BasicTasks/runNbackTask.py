@@ -8,6 +8,7 @@ import datetime
 import random
 import pandas as pd
 from psychopy import parallel
+import utils
 
 class runNbackTask:
     instructions_folder = "./pictures/instructions_nBack"
@@ -62,7 +63,7 @@ class runNbackTask:
         self.cognitive_load_log = WriteToExcel(self.load_evaluation_file_prefix + \
                                                self.subNumber + "_" + current_hour + "_" + current_min, "load")
 
-        self.outlet.push_sample(["startTask_task_nBack"])   #send start task trigger to LSL
+        utils.push_sample_current_time(self.outlet, ["startTask_task_nBack"])   #send start task trigger to LSL
 
     # run nBack task
     def start_run(self):

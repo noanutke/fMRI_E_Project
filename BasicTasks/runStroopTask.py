@@ -10,6 +10,7 @@ from random import shuffle
 import pandas as pd
 import numpy
 from psychopy import parallel
+import utils
 
 class runStroopTask:
     use_pilot_mode = True
@@ -63,7 +64,7 @@ class runStroopTask:
         self.cognitive_load_log = WriteToExcel("cognitive_load_evaluation_stroop" + self.subNumber + "_" + current_hour + "_" + current_min, "load")
 
         self.start_again = True #should choose condition (practice/test) again
-        self.outlet.push_sample(["startTask_task_stroop"])
+        utils.push_sample_current_time(self.outlet, ["startTask_task_stroop"] )
 
 
     def init_stimuli_from_file(self):
@@ -377,7 +378,6 @@ class runStroopTask:
                    "stress", self.stress_evaluation_log, self.outlet, self.subNumber,\
                    self.current_block_order_number, "stroop")
 
-    def evaluate_load(self, block):
-        return SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
+    def evaluate_load(self, block):        return SelfReport(self.experiment.exp, self.screen_height, self.screen_width, \
                    "load", self.cognitive_load_log, self.outlet, self.subNumber,\
                    self.current_block_order_number, "stroop")

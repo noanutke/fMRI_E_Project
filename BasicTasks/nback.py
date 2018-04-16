@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-from expyriment import control, stimuli, design, misc, io
+from expyriment import stimuli, misc, io
 from grid import Grid
 import datetime
-
-import time
+import utils
 
 class Nback:
     exp = None
@@ -80,17 +79,18 @@ class Nback:
         self.is_baseline = isBaseline
 
         # send start nBack block LSL trigger
-        self.outlet.push_sample(["startBlock_task_nBack_practice_" + ("1" if self.is_practice else "0") \
+        utils.push_sample_current_time(self.outlet, ["startBlock_task_nBack_practice_" + ("1" if self.is_practice else "0") \
                                  + "_baseline_" + ("1" if self.is_baseline else "0") \
                                  + "_level_" + str(self.n) + "_order_" + self.order \
                                  + "_subNumber_" + self.subNumber + "_blockIndex_" + str(block_index+1)])
+
         self.init_stimuli(letters_list, locations_list)
 
         self.last_trial_error = False
         self.run_experiment()
 
         # send end nBack block LSL trigger
-        self.outlet.push_sample(["endBlock_task_nBack"])
+        utils.push_sample_current_time(self.outlet, ["endBlock_task_nBack"] )
 
 
     def init_stimuli(self, letters_list, locations_list):
@@ -150,11 +150,14 @@ class Nback:
 
             if self.with_audio_stimuli:
                 audio.play()    # we have auditory stimuli so we play the letter now
-                self.outlet.push_sample(["stimulus_task_nBack_type_letter_letter_" + str(self.digit)])
+                utils.push_sample_current_time(self.outlet,\
+                                               ["stimulus_task_nBack_type_letter_letter_" + str(self.digit)])
                 audio.unload()
 
             if self.with_visual_stimuli:
-                self.outlet.push_sample(["stimulus_task_nBack_type_vis_location_" +self.position_text])
+                utils.push_sample_current_time(self.outlet, \
+                                               ["stimulus_task_nBack_type_vis_location_" + self.position_text])
+
 
             # wait for subject's response. Wait only for "duration" time
             key, rt = game1.wait_press(self.possible_joystick_buttons, self.stimuli_duration, process_control_events=False)
@@ -178,12 +181,13 @@ class Nback:
                                                  - time_delay_after_stimuli- time_delay_for_isi)
                 if key != None:# we get here if subject has responded - so we need to wait for the rest of
                                 # the ISI
-                    self.outlet.push_sample(["keyPressed_task_nBack_key_" + str(key)])
+                    utils.push_sample_current_time(self.outlet, ["keyPressed_task_nBack_key_" + str(key)] )
+
                     # wait the rest of the ISI before going on
                     self.exp.clock.wait(self.ISI - rt - time_delay_for_isi - time_delay_after_stimuli) # wait the rest of the ISI before going on
                     rt = rt + self.stimuli_duration + time_delay_after_stimuli
             else:   # subject responded and stimulus duration hasn't ended
-                self.outlet.push_sample(["keyPressed_task_nBack_key_" + str(key)])
+                utils.push_sample_current_time(self.outlet, ["keyPressed_task_nBack_key_" + str(key)])
 
                 # wait the rest of the stimulus duration before going on
                 self.exp.clock.wait(self.stimuli_duration - rt) # wait the rest of the stimuliDuration before removing
@@ -282,7 +286,7 @@ class Nback:
         self.exp.data.add([str(datetime.datetime.now()), self.digit, self.position_text, target_type, \
                            key, rt, response_to_target, is_success, self.n, self.order, self.is_practice])
 
-        self.outlet.push_sample(["trialResultName_task_nBack_resultType_" + response_to_target])
+        utils.push_sample_current_time(self.outlet, ["trialResult_task_nBack_resultType_" + response_to_target])
 
         expected_response = "1";
         actual_response = "1";
@@ -296,6 +300,6 @@ class Nback:
             actual_response = "2"
         elif key is None:
             actual_response = "0"
-        self.outlet.push_sample(["trialResult_task_nBack_expected_" + expected_response + \
+        utils.push_sample_current_time(self.outlet, ["trialResult_task_nBack_expected_" + expected_response + \
                                  "_actual_" + actual_response])
 

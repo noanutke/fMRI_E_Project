@@ -9,8 +9,8 @@ This example is appropriate to illustrates the use of the Android runtime enviro
 """
 from __future__ import division
 import datetime
-import time as Time
 from expyriment import stimuli, io, design, misc
+import utils
 
 design.defaults.experiment_background_colour = misc.constants.C_GREY
 design.defaults.experiment_foreground_colour = misc.constants.C_BLACK
@@ -101,9 +101,9 @@ class SelfReport:
         self.paint_all_lines();
 
         # wait for responses
-        self.outlet.push_sample(["eval_task_" + task + "_start_1_" + type + "_1"])
+        utils.push_sample_current_time(self.outlet, ["eval_task_" + task + "_start_1_" + type + "_1"])
         self.wait_for_marks()
-        self.outlet.push_sample(["eval_task_" + task + "_end_1_" + type + "_1"])
+        utils.push_sample_current_time(self.outlet, ["eval_task_" + task + "_end_1_" + type + "_1"])
 
         self.save_current_evaluation_to_file();
 

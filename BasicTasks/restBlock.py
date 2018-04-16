@@ -1,5 +1,5 @@
 from expyriment import control, stimuli, design, misc, io
-import time as Time
+import utils
 
 class RestBlock:
     continue_key = misc.constants.K_SPACE
@@ -21,19 +21,18 @@ class RestBlock:
 
     def start_rest(self):
 
-        self.lsl_stream.push_sample(["instructions_start_1_task_" + self.task])
+        utils.push_sample_current_time(self.lsl_stream, ["instructions_start_1_task_" + self.task])
         cont = self.write_anticipation_text()
 
-        self.lsl_stream.push_sample(["instructions_end_1_task_" + self.task])
+        utils.push_sample_current_time(self.lsl_stream, ["instructions_end_1_task_" + self.task])
         if cont == False:
             return False
         if self.is_practice:
             return True;
         else:
-            self.lsl_stream.push_sample(["fixation_start_1_task_" + self.task])
+            utils.push_sample_current_time(self.lsl_stream, ["fixation_start_1_task_" + self.task])
             cont = self.paint_cross(self.exp)
-            self.lsl_stream\
-                .push_sample(["fixation_end_1_task_" + self.task])
+            utils.push_sample_current_time(self.lsl_stream, ["fixation_end_1_task_" + self.task])
             if cont == True:
                 return True
             return False
