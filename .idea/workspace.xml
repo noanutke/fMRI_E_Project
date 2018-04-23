@@ -3,9 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="80c15546-219e-47b8-92c4-deb823746a80" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/BasicTasks/grid.py" afterPath="$PROJECT_DIR$/BasicTasks/grid.py" />
+      <change beforePath="$PROJECT_DIR$/BasicTasks/main.py" afterPath="$PROJECT_DIR$/BasicTasks/main.py" />
       <change beforePath="$PROJECT_DIR$/BasicTasks/nback.py" afterPath="$PROJECT_DIR$/BasicTasks/nback.py" />
       <change beforePath="$PROJECT_DIR$/BasicTasks/selfReport.py" afterPath="$PROJECT_DIR$/BasicTasks/selfReport.py" />
-      <change beforePath="$PROJECT_DIR$/BasicTasks/utils.py" afterPath="$PROJECT_DIR$/BasicTasks/utils.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -25,20 +26,8 @@
       <file leaf-file-name="runNbackTask.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BasicTasks/runNbackTask.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1375">
-              <caret line="65" column="8" lean-forward="false" selection-start-line="65" selection-start-column="8" selection-end-line="65" selection-end-column="77" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="runStroopTask.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/BasicTasks/runStroopTask.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1375">
-              <caret line="67" column="0" lean-forward="false" selection-start-line="67" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
+            <state relative-caret-position="243">
+              <caret line="35" column="60" lean-forward="false" selection-start-line="35" selection-start-column="57" selection-end-line="35" selection-end-column="60" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -59,8 +48,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BasicTasks/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="400">
-              <caret line="16" column="18" lean-forward="false" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
+            <state relative-caret-position="250">
+              <caret line="74" column="0" lean-forward="true" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
               <folding>
                 <element signature="e#195#226#0" expanded="true" />
               </folding>
@@ -68,21 +57,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pylsl.py" pinned="false" current-in-tab="false">
-        <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/pylsl/pylsl.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="25">
-              <caret line="388" column="0" lean-forward="false" selection-start-line="388" selection-start-column="0" selection-end-line="388" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="selfReport.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BasicTasks/selfReport.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="319">
-              <caret line="104" column="45" lean-forward="false" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
+            <state relative-caret-position="725">
+              <caret line="29" column="37" lean-forward="false" selection-start-line="29" selection-start-column="37" selection-end-line="29" selection-end-column="37" />
               <folding>
                 <element signature="e#195#226#0" expanded="true" />
               </folding>
@@ -93,8 +72,8 @@
       <file leaf-file-name="stroop.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/BasicTasks/stroop.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1275">
-              <caret line="53" column="11" lean-forward="false" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="11" />
+            <state relative-caret-position="2225">
+              <caret line="91" column="44" lean-forward="false" selection-start-line="91" selection-start-column="40" selection-end-line="91" selection-end-column="44" />
               <folding>
                 <element signature="e#48#82#0" expanded="true" />
               </folding>
@@ -115,8 +94,8 @@
       <file leaf-file-name="nback.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/BasicTasks/nback.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="277" column="48" lean-forward="false" selection-start-line="277" selection-start-column="48" selection-end-line="277" selection-end-column="48" />
+            <state relative-caret-position="300">
+              <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
               <folding>
                 <element signature="e#48#88#0" expanded="true" />
               </folding>
@@ -124,11 +103,31 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="_internals.py" pinned="false" current-in-tab="false">
-        <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/_internals.py">
+      <file leaf-file-name="grid.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/BasicTasks/grid.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="100">
-              <caret line="4" column="3" lean-forward="false" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
+            <state relative-caret-position="400">
+              <caret line="18" column="42" lean-forward="false" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_api_reference_tool.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/_api_reference_tool.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2925">
+              <caret line="119" column="41" lean-forward="false" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="_audio.py" pinned="false" current-in-tab="false">
+        <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/stimuli/_audio.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3000">
+              <caret line="121" column="38" lean-forward="false" selection-start-line="121" selection-start-column="18" selection-end-line="121" selection-end-column="38" />
               <folding />
             </state>
           </provider>
@@ -145,16 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>min_movemen</find>
-      <find>min</find>
-      <find>min_m</find>
-      <find>_in\</find>
-      <find>trials_in_block</find>
-      <find>paint_all_lines</find>
-      <find>line_positions_y</find>
-      <find>positions_list</find>
-      <find>pygame</find>
-      <find>run(</find>
       <find>positions_list_numbers</find>
       <find>local_clock</find>
       <find>push_sample(</find>
@@ -175,6 +164,16 @@
       <find>succ</find>
       <find>hit_trials</find>
       <find>start_1</find>
+      <find>*</find>
+      <find>increase_movement_speed_by</find>
+      <find>preloa</find>
+      <find>pre</find>
+      <find>prel</find>
+      <find>prelo</find>
+      <find>preload</find>
+      <find>is_preloaded = False</find>
+      <find>unloa</find>
+      <find>sub</find>
     </findStrings>
     <replaceStrings>
       <replace>order</replace>
@@ -216,17 +215,17 @@
         <option value="$PROJECT_DIR$/BarFeedback/grid.py" />
         <option value="$PROJECT_DIR$/BarFeedback/main.py" />
         <option value="$PROJECT_DIR$/BarFeedback/selfReport.py" />
-        <option value="$PROJECT_DIR$/BasicTasks/grid.py" />
         <option value="$PROJECT_DIR$/BasicTasks/setup.py" />
         <option value="$PROJECT_DIR$/BasicTasks/writeToExcel.py" />
-        <option value="$PROJECT_DIR$/BasicTasks/main.py" />
         <option value="$PROJECT_DIR$/BasicTasks/runStroopTask.py" />
-        <option value="$PROJECT_DIR$/BasicTasks/runNbackTask.py" />
         <option value="$PROJECT_DIR$/BasicTasks/restBlock.py" />
         <option value="$PROJECT_DIR$/BasicTasks/stroop.py" />
         <option value="$PROJECT_DIR$/BasicTasks/utils.py" />
         <option value="$PROJECT_DIR$/BasicTasks/selfReport.py" />
         <option value="$PROJECT_DIR$/BasicTasks/nback.py" />
+        <option value="$PROJECT_DIR$/BasicTasks/grid.py" />
+        <option value="$PROJECT_DIR$/BasicTasks/main.py" />
+        <option value="$PROJECT_DIR$/BasicTasks/runNbackTask.py" />
       </list>
     </option>
   </component>
@@ -270,6 +269,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -291,16 +291,27 @@
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
               <item name="&lt; Python 2.7.11 (C:\Program Files (x86)\PsychoPy2\python.exe) &gt;" type="70bed36:NamedLibraryElementNode" />
             </path>
+            <path>
+              <item name="fMRI_E_Project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; Python 2.7.11 (C:\Program Files (x86)\PsychoPy2\python.exe) &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="Lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="fMRI_E_Project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="&lt; Python 2.7.11 (C:\Program Files (x86)\PsychoPy2\python.exe) &gt;" type="70bed36:NamedLibraryElementNode" />
+              <item name="site-packages" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$USER_HOME$/MIST" />
+    <property name="last_opened_file_path" value="$USER_HOME$/Noam_cloned" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="SearchEverywhereHistoryKey" value="&#9;FILE&#9;file://C:/Users/NOA/fMRI_E_Project/BasicTasks/runNbackTask.py" />
   </component>
@@ -469,13 +480,13 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24721485" sideWeight="0.7876984" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32819906" sideWeight="0.49814323" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19549763" sideWeight="0.44615385" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19905214" sideWeight="0.49336872" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2606635" sideWeight="0.5538462" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19905214" sideWeight="0.49336872" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24526067" sideWeight="0.47214854" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2606635" sideWeight="0.5538462" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24972972" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3270142" sideWeight="0.796817" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24297082" sideWeight="0.21230158" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3364929" sideWeight="0.605305" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24297082" sideWeight="0.21230158" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -581,16 +592,16 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/BasicTasks/nback.py</url>
-          <line>209</line>
+          <line>207</line>
           <option name="timeStamp" value="414" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/BasicTasks/nback.py</url>
-          <line>257</line>
+          <line>255</line>
           <option name="timeStamp" value="415" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="416" />
+      <option name="time" value="417" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
@@ -671,14 +682,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/pandas/core/generic.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="2671" column="0" lean-forward="false" selection-start-line="2671" selection-start-column="0" selection-end-line="2671" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BarFeedback/setup.py" />
     <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/xlrd/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1800">
@@ -829,13 +832,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/BasicTasks/grid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/misc/constants.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="675">
@@ -861,17 +857,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="100">
           <caret line="4" column="3" lean-forward="false" selection-start-line="4" selection-start-column="3" selection-end-line="4" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BasicTasks/runNbackTask.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1375">
-          <caret line="65" column="8" lean-forward="false" selection-start-line="65" selection-start-column="8" selection-end-line="65" selection-end-column="77" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -879,37 +864,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1375">
           <caret line="67" column="0" lean-forward="false" selection-start-line="67" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BasicTasks/stroop.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1275">
-          <caret line="53" column="11" lean-forward="false" selection-start-line="53" selection-start-column="8" selection-end-line="53" selection-end-column="11" />
-          <folding>
-            <element signature="e#48#82#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/BasicTasks/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="16" column="18" lean-forward="false" selection-start-line="16" selection-start-column="18" selection-end-line="16" selection-end-column="18" />
-          <folding>
-            <element signature="e#195#226#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/pylsl/pylsl.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="25">
+        <state relative-caret-position="9600">
           <caret line="388" column="0" lean-forward="false" selection-start-line="388" selection-start-column="0" selection-end-line="388" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -931,18 +892,72 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/BasicTasks/selfReport.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="319">
-          <caret line="104" column="45" lean-forward="false" selection-start-line="104" selection-start-column="45" selection-end-line="104" selection-end-column="45" />
+        <state relative-caret-position="725">
+          <caret line="29" column="37" lean-forward="false" selection-start-line="29" selection-start-column="37" selection-end-line="29" selection-end-column="37" />
           <folding>
             <element signature="e#195#226#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/BasicTasks/stroop.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2225">
+          <caret line="91" column="44" lean-forward="false" selection-start-line="91" selection-start-column="40" selection-end-line="91" selection-end-column="44" />
+          <folding>
+            <element signature="e#48#82#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/_api_reference_tool.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2925">
+          <caret line="119" column="41" lean-forward="false" selection-start-line="119" selection-start-column="41" selection-end-line="119" selection-end-column="41" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Program Files (x86)/PsychoPy2/Lib/site-packages/expyriment/stimuli/_audio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3000">
+          <caret line="121" column="38" lean-forward="false" selection-start-line="121" selection-start-column="18" selection-end-line="121" selection-end-column="38" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BasicTasks/runNbackTask.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="35" column="60" lean-forward="false" selection-start-line="35" selection-start-column="57" selection-end-line="35" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BasicTasks/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="250">
+          <caret line="74" column="0" lean-forward="true" selection-start-line="74" selection-start-column="0" selection-end-line="74" selection-end-column="0" />
+          <folding>
+            <element signature="e#195#226#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/BasicTasks/grid.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="18" column="42" lean-forward="false" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/BasicTasks/nback.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="277" column="48" lean-forward="false" selection-start-line="277" selection-start-column="48" selection-end-line="277" selection-end-column="48" />
+        <state relative-caret-position="300">
+          <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
           <folding>
             <element signature="e#48#88#0" expanded="true" />
           </folding>

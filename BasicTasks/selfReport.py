@@ -31,7 +31,7 @@ class SelfReport:
     text_size = 40
     min_movement_for_update = 0.1 #to prevent over sensitivity of joystick we only update marker if the
                                 # movement is bigger than this value
-    increase_movement_speed_by = 10
+    increase_movement_speed_by = 20
     wait_for_updates_cycle = 10 #for how long we should wait for input before checking the input status (mili seconds)
     wait_after_button_click = 200 #For how long we should wait after a button click before enabling new input
                                     #from joystick, to prevent over sensitivity of joystick

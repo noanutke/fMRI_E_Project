@@ -131,7 +131,6 @@ class Nback:
                 # so we initialize the auditory stimulus
                 self.digit = self.digit_list[trial]
                 audio = stimuli.Audio(self.sounds_folder + str(int(self.digit)) + self.sound_files_suffix)
-                audio.preload()
 
             canvas = stimuli.BlankScreen()
             time_delay_for_isi = 0
@@ -152,7 +151,6 @@ class Nback:
                 audio.play()    # we have auditory stimuli so we play the letter now
                 utils.push_sample_current_time(self.outlet,\
                                                ["stimulus_task_nBack_type_letter_letter_" + str(self.digit)])
-                audio.unload()
 
             if self.with_visual_stimuli:
                 utils.push_sample_current_time(self.outlet, \

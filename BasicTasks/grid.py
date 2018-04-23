@@ -18,24 +18,27 @@ class Grid:
 
     def __init__(self, should_paint_grid):
         self.should_paint_grid = should_paint_grid
+        self.line_horsizontal1 = stimuli.Line((-300, 80), (300, 80), 5)
+        self.line_horsizontal2 = stimuli.Line((-300, -80), (300, -80), 5)
+        self.line_vertical1 = stimuli.Line((-100, 200), (-100, -200), 5)
+        self.line_vertical2 = stimuli.Line((100, 200), (100, -200), 5)
+        self.cross = stimuli.FixCross((50, 50), (0, 0), 5)
+
+        self.line_horsizontal1.preload()
+        self.line_horsizontal2.preload()
+        self.line_vertical1.preload()
+        self.line_vertical2.preload()
+
 
     def paint_grid(self, canvas):
         time_delay = 0;
-        cross = stimuli.FixCross((50,50), (0,0), 5)
-        time_delay += cross.plot(canvas)
+
+        time_delay += self.cross.plot(canvas)
         if self.should_paint_grid == 0:
             return 0;
-        line_horsizontal1 = stimuli.Line((-300, 80), (300, 80), 5)
-        line_horsizontal2 = stimuli.Line((-300, -80), (300, -80), 5)
-        line_vertical1 = stimuli.Line((-100, 200), (-100, -200), 5)
-        line_vertical2 = stimuli.Line((100, 200), (100, -200), 5)
 
-        time_delay += line_horsizontal1.preload()
-        time_delay += line_horsizontal2.preload()
-        time_delay += line_vertical1.preload()
-        time_delay += line_vertical2.preload()
-        time_delay += line_vertical1.plot(canvas)
-        time_delay += line_vertical2.plot(canvas)
-        time_delay += line_horsizontal1.plot(canvas)
-        time_delay += line_horsizontal2.plot(canvas)
+        time_delay += self.line_vertical1.plot(canvas)
+        time_delay += self.line_vertical2.plot(canvas)
+        time_delay += self.line_horsizontal1.plot(canvas)
+        time_delay += self.line_horsizontal2.plot(canvas)
         return time_delay;
